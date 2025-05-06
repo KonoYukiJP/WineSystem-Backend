@@ -58,7 +58,7 @@ def insert_report_in_system(system_id):
     user_id = body.get('user_id')
     work_id = body.get('work_id')
     operation_id = body.get('operation_id')
-    kind_id = body.get('kind')
+    kind_id = body.get('kind_id')
     feature_id = body.get('feature_id')
     value = body.get('value')
     note = body.get('note')
