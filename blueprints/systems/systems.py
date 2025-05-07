@@ -77,53 +77,39 @@ def insert_system():
         if connection:
             connection.close()
 
-@systems_bp.route('/<int:system_id>/name', methods=['PUT'])
-def update_name_in_system(system_id):
+@systems_bp.route('/<int:system_id>', methods=['PATCH'])
+def update_system(system_id):
     body = request.get_json()
     system_name = body.get('name')
-    
-    try:
-        connection = connect()
-        cursor = connection.cursor()
-        
-        cursor.execute('SELECT EXISTS(SELECT 1 FROM systems AS `system` WHERE system.name = %s)', (system_name, ))
-        result = cursor.fetchone()
-        if result[0]:
-            return jsonify({"message": "System name already exists."}), 404
-        
-        cursor.execute(
-            'UPDATE systems SET name = %s WHERE id = %s',
-            (system_name, system_id)
-        )
-        connection.commit()
-        
-        return jsonify({"message": "Password was changed successfully."}), 200
-    except Exception as error:
-        return jsonify({"message": str(e)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
-            
-@systems_bp.route('/<int:system_id>/year', methods=['PUT'])
-def update_system_year(system_id):
-    body = request.get_json()
     system_year = body.get('year')
     
     try:
         connection = connect()
         cursor = connection.cursor()
         
-        cursor.execute(
-            'UPDATE systems SET year = %s WHERE id = %s',
-            (system_year, system_id)
-        )
+        if system_name is not None:
+            cursor.execute('SELECT EXISTS(SELECT 1 FROM systems AS `system` WHERE system.name = %s)', (system_name, ))
+            result = cursor.fetchone()
+            if result[0]:
+                return jsonify({"message": "System name already exists."}), 404
+            
+            cursor.execute(
+                'UPDATE systems SET name = %s WHERE id = %s',
+                (system_name, system_id)
+            )
+            
+        if system_year is not None:
+            cursor.execute(
+                'UPDATE systems SET year = %s WHERE id = %s',
+                (system_year, system_id)
+            )
+            
         connection.commit()
         
         return jsonify({"message": "Password was changed successfully."}), 200
     except Exception as error:
-        return jsonify({"message": str(e)}), 500
+        print(str(error))
+        return jsonify({"message": str(error)}), 500
     finally:
         if cursor:
             cursor.close()

@@ -18,7 +18,7 @@ def fetch_table(query, params = ()):
 def fetch_users_in_system(system_id):
     try:
         query = '''
-            SELECT user.id, user.name, user.password_hash, role_id, user.is_enabled
+            SELECT user.id, user.name, role_id, user.is_enabled
             FROM users user
             WHERE user.system_id = %s
         '''
