@@ -54,7 +54,7 @@ def fetch_reports_in_system(system_id):
 @systems_bp.route('/<int:system_id>/reports', methods = ['POST'])
 def insert_report_in_system(system_id):
     body = request.get_json()
-    date = datetime.fromisoformat(body.get('date'))
+    date = datetime.fromisoformat(body.get('date').replace("Z", "+00:00"))
     user_id = body.get('user_id')
     work_id = body.get('work_id')
     operation_id = body.get('operation_id')
@@ -62,9 +62,6 @@ def insert_report_in_system(system_id):
     feature_id = body.get('feature_id')
     value = body.get('value')
     note = body.get('note')
-    
-    print(body)
-    print(date, user_id, work_id, operation_id, kind_id, feature_id, value, note)
     
     try:
         connection = connect()

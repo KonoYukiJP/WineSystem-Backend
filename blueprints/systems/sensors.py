@@ -39,7 +39,7 @@ def create_sensor_in_system(system_id):
     unit = body.get('unit')
     tank_id = body.get('tank_id', None)
     position = body.get('position')
-    date = datetime.fromisoformat(body.get('date'))
+    date = datetime.fromisoformat(body.get('date').replace("Z", "+00:00"))
     
     try:
         connection = connect()

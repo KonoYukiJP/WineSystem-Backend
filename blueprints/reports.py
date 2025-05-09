@@ -7,7 +7,7 @@ reports_bp = Blueprint('reports', __name__)
 @reports_bp.route('/<int:report_id>', methods=['PUT'])
 def update_report(report_id):
     body = request.get_json()
-    date = datetime.fromisoformat(body.get('date'))
+    date = datetime.fromisoformat(body.get('date').replace("Z", "+00:00"))
     user_id = body.get('user_id')
     work_id = body.get('work_id')
     operation_id = body.get('operation_id')
