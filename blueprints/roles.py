@@ -8,9 +8,10 @@ def update_role(role_id):
     try:
         body = request.get_json()
         role_name = body.get('name')
-        role_permissions = body.get('permissions_patch')
-        insert = role_permissions.get('insert')
-        delete = role_permissions.get('delete')
+        inserts = body.get('inserts')
+        deletes = body.get('deletes')
+        
+        print(body)
         
         connection = connect()
         cursor = connection.cursor()
@@ -18,34 +19,39 @@ def update_role(role_id):
         
         cursor.execute('UPDATE roles SET name = %s WHERE id = %s', (role_name, role_id))
         
-        for item in delete:
-            action_id = item['action_id']
-            resource_id = item['resource_id']
-            cursor.execute(
-                '''
-                DELETE FROM permissions
-                WHERE role_id = %s AND action_id = %s AND resource_id = %s
-                ''',
-                (role_id, action_id, resource_id)
-            )
+        for permission in deletes:
+            resource_id = permission['resource_id']
+            action_ids = permission['action_ids']
             
-        for item in insert:
-            action_id = item['action_id']
-            resource_id = item['resource_id']
-            cursor.execute(
-                '''
-                INSERT INTO permissions (role_id, action_id, resource_id)
-                VALUES (%s, %s, %s)
-                ON DUPLICATE KEY UPDATE role_id = role_id
-                ''',
-                (role_id, action_id, resource_id)
-            )
+            for action_id in action_ids:
+                cursor.execute(
+                    '''
+                    DELETE FROM permissions
+                    WHERE role_id = %s AND resource_id = %s AND action_id = %s
+                    ''',
+                    (role_id, action_id, resource_id)
+                )
+                
+        for permission in inserts:
+            resource_id = permission['resource_id']
+            action_ids = permission['action_ids']
+            
+            for action_id in action_ids:
+                cursor.execute(
+                    '''
+                    INSERT INTO permissions (role_id, resource_id, action_id)
+                    VALUES (%s, %s, %s)
+                    ON DUPLICATE KEY UPDATE role_id = role_id
+                    ''',
+                    (role_id, resource_id, action_id)
+                )
         
         connection.commit()
         
         return jsonify({"message": "Role updated successfully"}), 200
 
     except Exception as error:
+        print(str(error))
         return jsonify({"message": str(error)}), 500
 
     finally:
