@@ -28,12 +28,34 @@ def fetch_roles_in_system(system_id):
         cursor = connection.cursor(dictionary = True)
         
         for role in roles:
+            # まず permissions を取得（flat list）
             cursor.execute('''
-                    SELECT permission.action_id, permission.resource_id
-                    FROM permissions permission
-                    WHERE permission.role_id = %s
-                ''', (role['id'],))
-            role['permissions'] = cursor.fetchall()
+                SELECT permission.resource_id, permission.action_id
+                FROM permissions permission
+                WHERE permission.role_id = %s
+            ''', (role['id'],))
+            raw_permissions = cursor.fetchall()
+
+            # resource_id ごとに group 化（dict[int, list[int]]）
+            permission_map = {}
+            for perm in raw_permissions:
+                rid = perm['resource_id']
+                aid = perm['action_id']
+                if rid not in permission_map:
+                    permission_map[rid] = []
+                permission_map[rid].append(aid)
+
+            # dict を list of dict に変換
+            grouped_permissions = [
+                {
+                    "resource_id": resource_id,
+                    "action_ids": action_ids
+                }
+                for resource_id, action_ids in permission_map.items()
+            ]
+
+            # ロールに追加
+            role['permissions'] = grouped_permissions
         
         return jsonify(roles), 200
     except Exception as error:
