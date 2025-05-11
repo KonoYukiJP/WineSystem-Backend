@@ -50,6 +50,7 @@ def restore_backup():
     backup_file = os.path.join("/var/www/WineSystem-Backend/backups", filename)
 
     if not os.path.exists(backup_file):
+        print("404")
         return jsonify({"error": "ファイルが存在しません"}), 404
 
     try:
@@ -65,4 +66,5 @@ def restore_backup():
         return jsonify({"message": "復元完了"}), 200
 
     except Exception as e:
+        print(str(e))
         return jsonify({"error": str(e)}), 500
