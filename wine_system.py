@@ -14,6 +14,7 @@ from blueprints.works import works_bp
 from blueprints.operations import operations_bp
 from blueprints.features import features_bp
 from blueprints.reports import reports_bp
+from blueprints.backups import backups_bp
 
 app = Flask(__name__)
 
@@ -31,6 +32,7 @@ app.register_blueprint(works_bp, url_prefix = '/works')
 app.register_blueprint(operations_bp, url_prefix = '/operations')
 app.register_blueprint(features_bp, url_prefix = '/features')
 app.register_blueprint(reports_bp, url_prefix = '/reports')
+app.register_blueprint(backups_bp, url_prefix = '/backups')
 
 if __name__ == '__main__':
     app.run(debug=True)
