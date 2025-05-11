@@ -41,3 +41,28 @@ def list_backups():
     except Exception as error:
         print(str(error))
         return jsonify({"error": str(error)}), 500
+
+@backups_bp.route('', methods=['PUT'])
+def restore_backup():
+    data = request.get_json()
+    filename = data.get('filename')
+
+    backup_file = os.path.join("/var/www/WineSystem-Backend/backups", filename)
+
+    if not os.path.exists(backup_file):
+        return jsonify({"error": "ファイルが存在しません"}), 404
+
+    try:
+        cmd = [
+            '/usr/bin/mysql',
+            '-u', 'flask_user',
+            '-pP@ssw0rd',
+            'wine_database'
+        ]
+        with open(backup_file, "r") as f:
+            subprocess.run(cmd, stdin=f, check=True)
+
+        return jsonify({"message": "復元完了"}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
