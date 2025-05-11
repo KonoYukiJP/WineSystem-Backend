@@ -23,3 +23,19 @@ def create_backup():
         subprocess.run(cmd, stdout=f, check=True)
 
     return backup_file
+
+@backups_bp.route('', methods=['GET'])
+def list_backups():
+    backup_dir = "/var/www/WineSystem-Backend/backups"
+
+    try:
+        # backups フォルダ内の .sql ファイルを取得してソート
+        files = sorted([
+            f for f in os.listdir(backup_dir)
+            if f.endswith(".sql")
+        ], reverse=True)
+
+        return jsonify({"backups": files}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
