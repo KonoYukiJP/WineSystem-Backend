@@ -73,6 +73,7 @@ def restore_backup():
 def delete_backup():
     data = request.get_json()
     filename = data.get('filename')
+    print(date)
 
     if not filename:
         return jsonify({"error": "'filename' が必要です"}), 400
@@ -86,4 +87,5 @@ def delete_backup():
         os.remove(backup_file)
         return jsonify({"message": "削除しました"}), 200
     except Exception as e:
+        print(str(e))
         return jsonify({"error": str(e)}), 500
