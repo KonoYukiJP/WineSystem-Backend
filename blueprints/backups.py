@@ -69,11 +69,9 @@ def restore_backup():
         print(str(e))
         return jsonify({"error": str(e)}), 500
 
-@backups_bp.route('', methods=['DELETE'])
-def delete_backup():
-    data = request.get_json()
-    filename = data.get('filename')
-    print(date)
+@backups_bp.route('/<str:filename>', methods=['DELETE'])
+def delete_backup(filename):
+    print(filename)
 
     if not filename:
         return jsonify({"error": "'filename' が必要です"}), 400
