@@ -34,8 +34,10 @@ def list_backups():
             f for f in os.listdir(backup_dir)
             if f.endswith(".sql")
         ], reverse=True)
-
+        
+        print({"backups": files})
         return jsonify({"backups": files}), 200
 
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+    except Exception as error:
+        print(str(error))
+        return jsonify({"error": str(error)}), 500
