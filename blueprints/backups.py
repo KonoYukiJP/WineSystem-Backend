@@ -69,7 +69,7 @@ def restore_backup():
         print(str(e))
         return jsonify({"error": str(e)}), 500
 
-@backups_bp.route('/<str:filename>', methods=['DELETE'])
+@backups_bp.route('/<string:filename>', methods=['DELETE'])
 def delete_backup(filename):
     print(filename)
 
