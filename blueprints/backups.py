@@ -8,8 +8,9 @@ backups_bp = Blueprint('backups', __name__)
 
 @backups_bp.route('', methods = ['POST'])
 def create_backup():
+    backup_dir = "/var/www/WineSystem-Backend/backups"
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_file = os.path.join('backups', f"backup_{timestamp}.sql")
+    backup_file = os.path.join(backup_dir, f"backup_{timestamp}.sql")
 
     cmd = [
         'mysqldump',
