@@ -13,7 +13,7 @@ def create_backup():
 
     cmd = [
         'mysqldump',
-        '--no-tablespaces','
+        '--no-tablespaces',
         '-u', 'flask_user',
         '-pP@ssw0rd',
         'wine_database'
