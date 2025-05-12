@@ -28,7 +28,7 @@ def fetch_reports_in_system(system_id):
             value,
             note
         FROM reports
-        WHERE report.system_id = %s
+        WHERE system_id = %s
     '''
     reports = fetch_table(query, (system_id, ))
     for report in reports:
