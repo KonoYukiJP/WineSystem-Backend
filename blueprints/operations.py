@@ -15,5 +15,5 @@ def fetch_table(query, params = ()):
 
 @operations_bp.route('', methods = ['GET'])
 def fetch_operations():
-    query = 'SELECT id, work_id, name FROM operations'
+    query = 'SELECT id, name, target_type FROM operations'
     return fetch_table(query, ())
