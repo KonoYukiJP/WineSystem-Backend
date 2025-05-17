@@ -1,10 +1,14 @@
-from flask import Blueprint, request, jsonify
-from database import connect
 from datetime import datetime
+
+from flask import Blueprint, request, jsonify
+
+from database import connect
+from auth import authorization_required
 
 sensors_bp = Blueprint('sensors', __name__)
 
 @sensors_bp.route('/<int:sensor_id>', methods=['PUT'])
+@authorization_required('Sensor')
 def update_sensor(sensor_id):
     body = request.get_json()
     name = body.get('name')
@@ -37,6 +41,7 @@ def update_sensor(sensor_id):
 
 
 @sensors_bp.route('/<int:sensor_id>', methods = ['DELETE'])
+@authorization_required('Sensor')
 def delete_sensor(sensor_id):
     try:
         connection = connect()

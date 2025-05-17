@@ -14,9 +14,8 @@ def fetch_table(query, params = ()):
     connection.close()
     return result
 
-
 @systems_bp.route('', methods = ['GET'], strict_slashes = False)
-def fetch_systems():
+def get_systems():
     systems = fetch_table('SELECT id, name, year, admin_name, password FROM systems')
     return jsonify(systems)
     

@@ -9,3 +9,4 @@ from . import tanks
 from . import materials
 from . import sensors
 from . import reports
+from . import login

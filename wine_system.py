@@ -1,7 +1,6 @@
 # wine_system.py
 
 from flask import Flask
-from blueprints.login import login_bp
 from blueprints.systems import systems_bp
 from blueprints.users import users_bp
 from blueprints.roles import roles_bp
@@ -19,7 +18,6 @@ from blueprints.backups import backups_bp
 app = Flask(__name__)
 
 # Blueprintの登録
-app.register_blueprint(login_bp, url_prefix = '/login')
 app.register_blueprint(systems_bp, url_prefix = '/systems')
 app.register_blueprint(users_bp, url_prefix = '/users')
 app.register_blueprint(roles_bp, url_prefix = '/roles')

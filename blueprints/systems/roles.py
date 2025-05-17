@@ -4,17 +4,16 @@ from database import connect
 from . import systems_bp
 
 def fetch_table(query, params = ()):
-    connection = connect()
-    cursor = connection.cursor(dictionary = True)
-    cursor.execute(query, params)
-    
-    result = cursor.fetchall()
-    cursor.close()
-    connection.close()
+    with (
+        connect() as connection,
+        connection.cursor(dictionary = True) as cursor
+    ):
+        cursor.execute(query, params)
+        result = cursor.fetchall()
     return result
     
 @systems_bp.route('/<int:system_id>/roles', methods = ['GET'])
-def fetch_roles_in_system(system_id):
+def get_roles_in_system(system_id):
     try:
         query = '''
             SELECT role.id, role.name
@@ -24,47 +23,44 @@ def fetch_roles_in_system(system_id):
         params = (system_id, )
         roles = fetch_table(query, params)
         
-        connection = connect()
-        cursor = connection.cursor(dictionary = True)
-        
-        for role in roles:
-            # まず permissions を取得（flat list）
-            cursor.execute('''
-                SELECT permission.resource_id, permission.action_id
-                FROM permissions permission
-                WHERE permission.role_id = %s
-            ''', (role['id'],))
-            raw_permissions = cursor.fetchall()
+        with (
+            connect() as connection,
+            connection.cursor(dictionary = True) as cursor
+        ):
+            for role in roles:
+                query = '''
+                    SELECT permission.resource_id, permission.action_id
+                    FROM permissions permission
+                    WHERE permission.role_id = %s
+                '''
+                params = (role['id'], )
+                cursor.execute(query, params)
+                raw_permissions = cursor.fetchall()
 
-            # resource_id ごとに group 化（dict[int, list[int]]）
-            permission_map = {}
-            for perm in raw_permissions:
-                rid = perm['resource_id']
-                aid = perm['action_id']
-                if rid not in permission_map:
-                    permission_map[rid] = []
-                permission_map[rid].append(aid)
+                # resource_id ごとに group 化（dict[int, list[int]]）
+                permission_map = {}
+                for permission in raw_permissions:
+                    resource_id = permission['resource_id']
+                    action_id = permission['action_id']
+                    if resource_id not in permission_map:
+                        permission_map[resource_id] = []
+                    permission_map[resource_id].append(action_id)
 
-            # dict を list of dict に変換
-            grouped_permissions = [
-                {
-                    "resource_id": resource_id,
-                    "action_ids": action_ids
-                }
-                for resource_id, action_ids in permission_map.items()
-            ]
+                # dict を list of dict に変換
+                grouped_permissions = [
+                    {
+                        "resource_id": resource_id,
+                        "action_ids": action_ids
+                    }
+                    for resource_id, action_ids in permission_map.items()
+                ]
 
-            # ロールに追加
-            role['permissions'] = grouped_permissions
+                # ロールに追加
+                role['permissions'] = grouped_permissions
         
         return jsonify(roles), 200
     except Exception as error:
         return jsonify({"message": str(error)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 @systems_bp.route('/<int:system_id>/roles', methods = ['POST'])
 def insert_role_in_system(system_id):

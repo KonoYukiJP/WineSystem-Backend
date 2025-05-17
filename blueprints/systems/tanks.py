@@ -1,59 +1,81 @@
-from flask import Blueprint,request,jsonify
-from database import connect
+# tanks.py
+
+from flask import Blueprint, request, jsonify
 
 from . import systems_bp
+from auth import authorization_required
+from database import connect
 
 def fetch_table(query, params = ()):
-    connection = connect()
-    cursor = connection.cursor(dictionary = True)
-    cursor.execute(query, params)
-    
-    result = cursor.fetchall()
-    cursor.close()
-    connection.close()
+    with (
+        connect() as connection,
+        connection.cursor(dictionary = True) as cursor
+    ):
+        cursor.execute(query, params)
+        result = cursor.fetchall()
     return result
 
-
-
-@systems_bp.route('/<system_id>/tanks', methods = ['GET'])
-def fetch_tanks_in_system(system_id):
+@systems_bp.route('/<int:system_id>/tanks', methods = ['GET'])
+@authorization_required('Tank')
+def get_tanks_in_system(system_id):
     query = '''
-        SELECT tank.id, tank.name, tank.note, tank.material_id
-        FROM tanks tank
-        WHERE tank.system_id = %s
+        SELECT id, name, note, material_id
+        FROM tanks
+        WHERE system_id = %s
     '''
-    return fetch_table(query, (system_id, ))
+    params = (system_id, )
+    try:
+        tanks = fetch_table(query, params)
+        return jsonify(tanks), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
 
 @systems_bp.route('/<int:system_id>/tanks', methods = ['POST'])
-def insert_tank_in_system(system_id):
+@authorization_required('Tank')
+def create_tank_in_system(system_id):
     body = request.get_json()
-    name = body.get('name')
-    note = body.get('note')
-    material_id = body.get('material_id')
+    
+    try:
+        name = body['name']
+        note = body['note']
+        material_id = body['material_id']
+    except KeyError:
+        return jsonify({'message': 'Invalid request format'}), 400
 
     try:
-        connection = connect()
-        cursor = connection.cursor()
-        
-        cursor.execute('SELECT EXISTS (SELECT 1 FROM systems WHERE id = %s)', (system_id,))
-        system_exists = cursor.fetchone()[0]
-        if not system_exists:
-            return jsonify({"message": "System Not Found."}), 404
-        
-        cursor.execute('SELECT EXISTS (SELECT 1 FROM tanks WHERE name = %s AND system_id = %s)', (name, system_id))
-        tank_exists = cursor.fetchone()[0]
-        if tank_exists:
-            return jsonify({"status": "error", "message": "Tank with this name already exists."}), 401
-        
-        material_id = None if material_id == 0 else material_id
-        
-        cursor.execute('INSERT INTO tanks (system_id, name, note, material_id) VALUES (%s, %s, %s, %s)', (system_id, name, note, material_id))
-        connection.commit()
-        return jsonify({"message": "cursor.lastrowid"}), 201
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            query = 'SELECT EXISTS (SELECT 1 FROM systems WHERE id = %s)'
+            params = (system_id, )
+            cursor.execute(query, params)
+            system_exists = cursor.fetchone()[0]
+            if not system_exists:
+                return jsonify({"message": "System Not Found."}), 404
+            
+            query = '''
+                SELECT EXISTS (
+                    SELECT 1 FROM tanks
+                    WHERE name = %s AND system_id = %s
+                )
+            '''
+            params = (name, system_id)
+            cursor.execute(query, params)
+            tank_exists = cursor.fetchone()[0]
+            if tank_exists:
+                return jsonify({"message": "Tank name already taken."}), 409
+            
+            material_id = None if material_id == 0 else material_id
+            
+            query = '''
+                INSERT INTO tanks (system_id, name, note, material_id)
+                VALUES (%s, %s, %s, %s)
+            '''
+            params = (system_id, name, note, material_id)
+            cursor.execute(query, params)
+            connection.commit()
+            
+        return 201
     except Exception as error:
         return jsonify({"message": str(error)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
