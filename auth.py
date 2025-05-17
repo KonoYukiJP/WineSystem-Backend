@@ -64,6 +64,7 @@ def authorization_required(resource):
                             ''',
                             (role_id, resource, request.method)
                         )
+                        print(role_id, resource, request.method)
                         if not cursor.fetchone()['permission']:
                             return jsonify({'message': 'Permission denied'}), 403
             except Exception as e:

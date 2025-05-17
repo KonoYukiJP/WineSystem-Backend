@@ -1,57 +1,53 @@
 from flask import Blueprint, request, jsonify
+
 from database import connect
 
 roles_bp = Blueprint('roles', __name__)
 
 @roles_bp.route('/<int:role_id>', methods = ['PATCH'])
 def update_role(role_id):
+    body = request.get_json()
+    role_name = body.get('name')
+    inserts = body.get('inserts')
+    deletes = body.get('deletes')
+    
     try:
-        body = request.get_json()
-        role_name = body.get('name')
-        inserts = body.get('inserts')
-        deletes = body.get('deletes')
-        
-        print(body)
-        
-        with connect() as connection:
-            with connection.cursor() as cursor:
-                connection.start_transaction()
-                cursor.execute('UPDATE roles SET name = %s WHERE id = %s', (role_name, role_id))
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            cursor.execute('UPDATE roles SET name = %s WHERE id = %s', (role_name, role_id))
+            
+            for permission in deletes:
+                resource_id = permission['resource_id']
+                action_ids = permission['action_ids']
                 
-                for permission in deletes:
-                    resource_id = permission['resource_id']
-                    action_ids = permission['action_ids']
+                for action_id in action_ids:
+                    query = '''
+                        DELETE FROM permissions
+                        WHERE role_id = %s AND resource_id = %s AND action_id = %s
+                    '''
+                    params = (role_id, resource_id, action_id)
+                    cursor.execute(query, params)
                     
-                    for action_id in action_ids:
-                        cursor.execute(
-                            '''
-                            DELETE FROM permissions
-                            WHERE role_id = %s AND resource_id = %s AND action_id = %s
-                            ''',
-                            (role_id, action_id, resource_id)
-                        )
-                        
-                for permission in inserts:
-                    resource_id = permission['resource_id']
-                    action_ids = permission['action_ids']
-                    
-                    for action_id in action_ids:
-                        cursor.execute(
-                            '''
-                            INSERT INTO permissions (role_id, resource_id, action_id)
-                            VALUES (%s, %s, %s)
-                            ON DUPLICATE KEY UPDATE role_id = role_id
-                            ''',
-                            (role_id, resource_id, action_id)
-                        )
+            for permission in inserts:
+                resource_id = permission['resource_id']
+                action_ids = permission['action_ids']
+                
+                for action_id in action_ids:
+                    query = '''
+                        INSERT INTO permissions (role_id, resource_id, action_id)
+                        VALUES (%s, %s, %s)
+                        ON DUPLICATE KEY UPDATE role_id = role_id
+                    '''
+                    params = (role_id, resource_id, action_id)
+                    cursor.execute(query, params)
+    
+            connection.commit()
         
-                connection.commit()
-        
-        return jsonify({"message": "Role updated successfully"}), 200
-
-    except Exception as error:
-        print(str(error))
-        return jsonify({"message": str(error)}), 500
+        return jsonify({'message': 'Success'}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
 
 
 @roles_bp.route('/<int:role_id>', methods = ['DELETE'])

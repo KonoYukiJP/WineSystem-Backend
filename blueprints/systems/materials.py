@@ -69,6 +69,6 @@ def create_material_in_system(system_id):
             cursor.execute(query, params)
             connection.commit()
             
-        return 201
+        return jsonify({'message': 'Success'}), 201
     except Exception as e:
-        return jsonify({"message": str(e)}), 500
+        return jsonify({'message': str(e)}), 500

@@ -76,6 +76,6 @@ def create_tank_in_system(system_id):
             cursor.execute(query, params)
             connection.commit()
             
-        return 201
+        return jsonify({'message': 'Success'}), 200
     except Exception as error:
         return jsonify({"message": str(error)}), 500
