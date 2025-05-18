@@ -19,18 +19,18 @@ def login(system_id):
     except KeyError:
         return jsonify({'message': 'Invalid request format'}), 400
         
-    try:
-        with (
-            connect() as connection,
-            connection.cursor(dictionary = True) as cursor
-        ):
-            query = '''
+    query = '''
                 SELECT user.password_hash
                 FROM users user
                 JOIN systems `system` ON `system`.id = user.system_id
                 WHERE `system`.id = %s AND user.id = %s
             '''
-            params = (system_id, user_id)
+    params = (system_id, user_id)
+    try:
+        with (
+            connect() as connection,
+            connection.cursor(dictionary = True) as cursor
+        ):
             cursor.execute(query, params)
             user = cursor.fetchone()
     except Exception as e:
@@ -43,13 +43,9 @@ def login(system_id):
         password.encode('utf-8'),
         user['password_hash'].encode('utf-8')
     ):
-        return jsonify({'message': 'Invalid user ID or password'}), 401
+        return jsonify({'message': 'Invalid user or password'}), 401
         
     try:
-        payload = {
-            'user_id': user_id,
-            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours = 1)
-        }
         token = generate_token(user_id)
         return jsonify({'token': token})
     except Exception as e:

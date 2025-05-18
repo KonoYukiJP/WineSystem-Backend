@@ -1,28 +1,18 @@
 from flask import Blueprint,request,jsonify
-from database import connect
 import bcrypt
 
 from . import systems_bp
-
-def fetch_table(query, params = ()):
-    connection = connect()
-    cursor = connection.cursor(dictionary = True)
-    cursor.execute(query, params)
-    
-    result = cursor.fetchall()
-    cursor.close()
-    connection.close()
-    return result
+from database import connect, fetchall
 
 @systems_bp.route('', methods = ['GET'], strict_slashes = False)
 def get_systems():
-    systems = fetch_table('SELECT id, name, year, admin_name, password FROM systems')
+    systems = fetchall('SELECT id, name, year, admin_name, password FROM systems')
     return jsonify(systems)
     
 @systems_bp.route('/<int:system_id>', methods = ['GET'])
 def fetch_system(system_id):
     query = 'SELECT id, name, year FROM systems AS `system` WHERE `system`.id = %s'
-    return fetch_table(query, (system_id, ))[0]
+    return fetchall(query, (system_id, ))[0]
 
 @systems_bp.route('', methods = ['POST'])
 def insert_system():

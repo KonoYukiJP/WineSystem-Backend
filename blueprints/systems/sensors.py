@@ -6,16 +6,7 @@ from flask import Blueprint,request,jsonify
 
 from . import systems_bp
 from auth import authorization_required
-from database import connect
-
-def fetch_table(query, params = ()):
-    with (
-        connect() as connection,
-        connection.cursor(dictionary = True) as cursor
-    ):
-        cursor.execute(query, params)
-        result = cursor.fetchall()
-    return result
+from database import connect, fetchall
 
 @systems_bp.route('/<int:system_id>/sensors', methods = ['GET'])
 @authorization_required('Sensor')
@@ -33,7 +24,7 @@ def get_sensors_in_system(system_id):
     '''
     params = (system_id, )
     try:
-        sensors = fetch_table(query, params)
+        sensors = fetchall(query, params)
         for sensor in sensors:
             sensor['date'] = sensor['date'].strftime('%Y-%m-%dT%H:%M:%SZ')
         return jsonify(sensors), 200

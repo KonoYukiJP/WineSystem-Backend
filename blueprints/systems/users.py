@@ -1,18 +1,11 @@
+# users.py
+
 from flask import Blueprint,request,jsonify
-from database import connect
 import bcrypt
 
 from . import systems_bp
 from auth import authorization_required
-
-def fetch_table(query, params = ()):
-    with (
-        connect() as connection,
-        connection.cursor(dictionary = True) as cursor
-    ):
-        cursor.execute(query, params)
-        result = cursor.fetchall()
-    return result
+from database import connect, fetchall
 
 @systems_bp.route('/<int:system_id>/users', methods = ['GET'])
 def get_users_in_system(system_id):
@@ -23,7 +16,7 @@ def get_users_in_system(system_id):
             WHERE user.system_id = %s
         '''
         params = (system_id, )
-        results = fetch_table(query, params)
+        results = fetchall(query, params)
         for user in results:
             user['is_enabled'] = bool(user['is_enabled'])
         return jsonify(results), 200

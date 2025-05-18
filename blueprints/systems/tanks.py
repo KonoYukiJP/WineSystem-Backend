@@ -4,16 +4,7 @@ from flask import Blueprint, request, jsonify
 
 from . import systems_bp
 from auth import authorization_required
-from database import connect
-
-def fetch_table(query, params = ()):
-    with (
-        connect() as connection,
-        connection.cursor(dictionary = True) as cursor
-    ):
-        cursor.execute(query, params)
-        result = cursor.fetchall()
-    return result
+from database import connect, fetchall
 
 @systems_bp.route('/<int:system_id>/tanks', methods = ['GET'])
 @authorization_required('Tank')
@@ -25,7 +16,7 @@ def get_tanks_in_system(system_id):
     '''
     params = (system_id, )
     try:
-        tanks = fetch_table(query, params)
+        tanks = fetchall(query, params)
         return jsonify(tanks), 200
     except Exception as e:
         return jsonify({'message': str(e)}), 500

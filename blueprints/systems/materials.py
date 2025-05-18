@@ -4,7 +4,7 @@ from flask import Blueprint, request, jsonify
 
 from . import systems_bp
 from auth import authorization_required
-from database import connect
+from database import connect, fetchall
 
 @systems_bp.route('/<int:system_id>/materials', methods = ['GET'])
 @authorization_required(resource = 'Material')
@@ -16,12 +16,7 @@ def get_materials_in_system(system_id):
     '''
     params = (system_id, )
     try:
-        with (
-            connect() as connection,
-            connection.cursor(dictionary = True) as cursor
-        ):
-            cursor.execute(query, params)
-            materials = cursor.fetchall()
+        materials = fetchall(query, params)
         return jsonify(materials), 200
     except Exception as e:
         return jsonify({'message': str(e)}), 500

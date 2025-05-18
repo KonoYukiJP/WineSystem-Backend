@@ -1,23 +1,14 @@
 from flask import Blueprint, request, jsonify
-from database import connect
 import bcrypt
 
-users_bp = Blueprint('users', __name__)
+from database import connect, fetchall
 
-def fetch_table(query, params = ()):
-    connection = connect()
-    cursor = connection.cursor(dictionary = True)
-    cursor.execute(query, params)
-    
-    result = cursor.fetchall()
-    cursor.close()
-    connection.close()
-    return result
+users_bp = Blueprint('users', __name__)
 
 @users_bp.route('/<int:user_id>/name', methods = ['GET'])
 def fetch_name_in_users(user_id):
     query = 'SELECT name AS value FROM users AS user WHERE user.id = %s'
-    return fetch_table(query, (user_id, ))[0]
+    return fetchall(query, (user_id, ))[0]
 
 @users_bp.route('/<int:user_id>', methods = ['PUT'])
 def update_user(user_id):

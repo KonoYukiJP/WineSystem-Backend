@@ -1,21 +1,16 @@
-from flask import Blueprint,request,jsonify
-from database import connect
+# reports.py
+
 from datetime import datetime
 
-from . import systems_bp
+from flask import Blueprint,request,jsonify
 
-def fetch_table(query, params = ()):
-    connection = connect()
-    cursor = connection.cursor(dictionary = True)
-    cursor.execute(query, params)
-    
-    result = cursor.fetchall()
-    cursor.close()
-    connection.close()
-    return result
+from . import systems_bp
+from auth import authorization_required
+from database import connect, fetchall
     
 @systems_bp.route('/<int:system_id>/reports', methods = ['GET'])
-def fetch_reports_in_system(system_id):
+@authorization_required('Report')
+def get_reports_in_system(system_id):
     query = '''
         SELECT
             id,
@@ -30,38 +25,54 @@ def fetch_reports_in_system(system_id):
         FROM reports
         WHERE system_id = %s
     '''
-    reports = fetch_table(query, (system_id, ))
-    for report in reports:
-        report['date'] = report['date'].strftime('%Y-%m-%dT%H:%M:%SZ')
-    return jsonify(reports)
+    params = (system_id, )
+    try:
+        reports = fetchall(query, params)
+        for report in reports:
+            report['date'] = report['date'].strftime('%Y-%m-%dT%H:%M:%SZ')
+        return jsonify(reports)
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
 
 @systems_bp.route('/<int:system_id>/reports', methods = ['POST'])
-def insert_report_in_system(system_id):
+@authorization_required('Report')
+def create_report_in_system(system_id):
     body = request.get_json()
-    date = datetime.fromisoformat(body.get('date').replace("Z", "+00:00"))
-    user_id = body.get('user_id')
-    work_id = body.get('work_id')
-    operation_id = body.get('operation_id')
-    kind_id = body.get('kind_id')
-    feature_id = body.get('feature_id')
-    value = body.get('value')
-    note = body.get('note')
+    try:
+        date = datetime.fromisoformat(body['date'].replace("Z", "+00:00"))
+        user_id = body['user_id']
+        work_id = body['work_id']
+        operation_id = body['operation_id']
+        kind_id = body['kind_id']
+        feature_id = body['feature_id']
+        value = body['value']
+        note = body['note']
+    except (KeyError, ValueError, TypeError) as error:
+        return jsonify({"message": str(error)}), 400
     
     try:
-        connection = connect()
-        cursor = connection.cursor()
-        
-        cursor.execute(
-            '''INSERT INTO reports (system_id, date, user_id, work_id, operation_id, kind_id, feature_id, value, note)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)''',
-            (system_id, date, user_id, work_id, operation_id, kind_id, feature_id, value, note)
-        )
-        connection.commit()
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            query = '''
+                INSERT INTO reports (
+                    system_id,
+                    date, 
+                    user_id, 
+                    work_id, 
+                    operation_id, 
+                    kind_id, 
+                    feature_id, 
+                    value, 
+                    note
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            '''
+            params = (system_id, date, user_id, work_id, operation_id, kind_id, feature_id, value, note)
+            cursor.execute(query, params)
+            connection.commit()
+            
         return jsonify({"message": "Report was inserted successly"}), 201
     except Exception as error:
         return jsonify({"message": str(error)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
