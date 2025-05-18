@@ -52,6 +52,7 @@ def authorization_required(resource):
             try:
                 with connect() as connection:
                     with connection.cursor(dictionary=True) as cursor:
+                        print(role_id, resource, 'PUT' if request.method == 'PATCH' else request.method)
                         cursor.execute(
                             '''
                             SELECT EXISTS (
