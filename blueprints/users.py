@@ -1,121 +1,118 @@
 from flask import Blueprint, request, jsonify
 import bcrypt
 
+from auth import authorization_required
 from database import connect, fetchall
 
 users_bp = Blueprint('users', __name__)
 
 @users_bp.route('/<int:user_id>/name', methods = ['GET'])
-def fetch_name_in_users(user_id):
+def get_username_in_users(user_id):
     query = 'SELECT name AS value FROM users AS user WHERE user.id = %s'
-    return fetchall(query, (user_id, ))[0]
+    params = (user_id, )
+    user = fetchall(query, params)
+    return jsonify(user[name]), 200
 
 @users_bp.route('/<int:user_id>', methods = ['PUT'])
+@authorization_required('User')
 def update_user(user_id):
     body = request.get_json()
-    username = body.get('name')
-    role_id = body.get('role_id')
-    is_enabled = body.get('is_enabled')
     
     try:
-        connection = connect()
-        cursor = connection.cursor()
-        
-        cursor.execute(
-            'UPDATE users SET name = %s, role_id = %s, is_enabled = %s WHERE id = %s',
-            (username, role_id, is_enabled, user_id)
-        )
-        connection.commit()
+        username = body['name']
+        role_id = body['role_id']
+        is_enabled = body['is_enabled']
+    except KeyError:
+        return jsonify({'message': 'Invalid request format'}), 400
+    
+    try:
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            query = 'UPDATE users SET name = %s, role_id = %s, is_enabled = %s WHERE id = %s'
+            params = (username, role_id, is_enabled, user_id)
+            cursor.execute(query, params)
+            connection.commit()
         
         return jsonify({"message": "User was updated successfully"}), 200
-        
-    except Exception as error:
-        return jsonify({"message": str(error)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
 
 @users_bp.route('/<int:user_id>/name', methods = ['PUT'])
+@authorization_required('User')
 def update_username(user_id):
     body = request.get_json()
-    username = body.get('name')
     
     try:
-        connection = connect()
-        cursor = connection.cursor()
-        
-        cursor.execute(
-            'UPDATE users SET name = %s WHERE id = %s',
-            (username, user_id)
-        )
-        connection.commit()
+        username = body.get('name')
+    except KeyError:
+        return jsonify({'message': 'Invalid request format'}), 400
+    
+    try:
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            query = 'UPDATE users SET name = %s WHERE id = %s'
+            params = (username, user_id)
+            cursor.execute(query, params)
+            connection.commit()
         
         return jsonify({"message": "User was updated successfully"}), 200
-        
-    except Exception as error:
-        return jsonify({"message": str(error)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
 
 @users_bp.route('/<int:user_id>/password', methods=['PUT'])
 def update_password_in_user(user_id):
     body = request.get_json()
-    old_password = body.get('old_password')
-    new_password = body.get('new_password')
     
     try:
-        connection = connect()
-        cursor = connection.cursor()
-        
-        # システム名とユーザー名でユーザーIDを取得
-        cursor.execute(
-            'SELECT user.password_hash FROM users AS user WHERE user.id = %s',
-            (user_id, )
-        )
-        
-        result = cursor.fetchone()
-        if not result[0]:
-            return jsonify({"message": "User not found"}), 404
-        
-        stored_password_hash = result[0]
-        
-        # 現在のパスワードが正しいかを確認
-        if not bcrypt.checkpw(old_password.encode('utf-8'), stored_password_hash.encode('utf-8')):
-            return jsonify({"message": "Invalid current password"}), 400
-        
-        # 新しいパスワードをハッシュ化して保存
-        new_password_hash = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
-        cursor.execute('UPDATE users SET password_hash = %s WHERE id = %s', (new_password_hash, user_id))
-        connection.commit()
+        old_password = body['old_password']
+        new_password = body['new_password']
+    except KeyError:
+        return jsonify({'message': 'Invalid request format'}), 400
+    
+    try:
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            query = 'SELECT user.password_hash FROM users AS user WHERE user.id = %s'
+            params = (user_id, )
+            cursor.execute(query, params)
+            password_hash = cursor.fetchone()[0]
+            if not password_hash:
+                return jsonify({"message": "User Not Found"}), 404
+            
+            if not bcrypt.checkpw(
+                old_password.encode('utf-8'),
+                password_hash.encode('utf-8')
+            ):
+                return jsonify({"message": "Invalid current password"}), 400
+            
+            # 新しいパスワードをハッシュ化して保存
+            new_password_hash = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            query = 'UPDATE users SET password_hash = %s WHERE id = %s'
+            params = (new_password_hash, user_id)
+            cursor.execute(query, params)
+            connection.commit()
         
         return jsonify({"message": "Password was changed successfully."}), 200
     except Exception as error:
         return jsonify({"message": str(error)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 @users_bp.route('/<int:user_id>', methods = ['DELETE'])
+@authorization_required('User')
 def delete_user(user_id):
     try:
-        connection = connect()
-        cursor = connection.cursor()
-        
-        cursor.execute('DELETE FROM users WHERE id = %s', (user_id,))
-        connection.commit()
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            cursor.execute('DELETE FROM users WHERE id = %s', (user_id, ))
+            connection.commit()
 
         return jsonify({"message": "System deleted successfully"}), 200
-    except Exception as error:
-        return jsonify({"message": str(error)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500

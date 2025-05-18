@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 
+from auth import authorization_required
 from database import connect
 
 roles_bp = Blueprint('roles', __name__)
 
 @roles_bp.route('/<int:role_id>', methods = ['PATCH'])
+@authorization_required('Role')
 def update_role(role_id):
     body = request.get_json()
     role_name = body.get('name')
@@ -51,26 +53,23 @@ def update_role(role_id):
 
 
 @roles_bp.route('/<int:role_id>', methods = ['DELETE'])
+@authorization_required('Role')
 def delete_role(role_id):
     try:
-        connection = connect()
-        cursor = connection.cursor()
-        
-        # 指定されたmaterial_idに対応するアイテムが存在するかチェック
-        cursor.execute('SELECT EXISTS(SELECT 1 FROM roles WHERE id = %s)', (role_id, ))
-        sensor_exists = cursor.fetchone()[0]
-        if not sensor_exists:
-            return jsonify({"message": "Role Not Found"}), 404
-        
-        # アイテムを削除
-        cursor.execute('DELETE FROM roles WHERE id = %s', (role_id, ))
-        connection.commit()
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            query = 'SELECT EXISTS (SELECT 1 FROM roles WHERE id = %s)'
+            params = (role_id, )
+            cursor.execute(query, params)
+            sensor_exists = cursor.fetchone()[0]
+            if not sensor_exists:
+                return jsonify({"message": "Role Not Found"}), 404
+            
+            cursor.execute('DELETE FROM roles WHERE id = %s', (role_id, ))
+            connection.commit()
 
         return jsonify({"message": "Role deleted successfully"}), 200
     except Exception as error:
         return jsonify({"message": str(error)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()

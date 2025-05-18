@@ -1,56 +1,55 @@
 from flask import Blueprint, request, jsonify
+
+from auth import authorization_required
 from database import connect
 
 materials_bp = Blueprint('materials', __name__)
 
 @materials_bp.route('/<int:material_id>', methods=['PUT'])
+@authorization_required('Material')
 def update_material(material_id):
     body = request.get_json()
-    material_name = body.get('name')
-    material_note = body.get('note')
-
     try:
-        connection = connect()
-        cursor = connection.cursor()
+        material_name = body['name']
+        material_note = body['note']
+    except KeyError:
+        return jsonify({'message': 'Invalid request format'}), 400
         
-        cursor.execute(
-            'UPDATE materials SET name = %s, note = %s WHERE id = %s',
-            (material_name, material_note, material_id)
-        )
-
-        connection.commit()
+    try:
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            query = 'UPDATE materials SET name = %s, note = %s WHERE id = %s'
+            params = (material_name, material_note, material_id)
+            cursor.execute(query, params)
+            connection.commit()
+            
         return jsonify({"message": "Material updated successfully"}), 200
-    except Exception as error:
-        if connection:
-            connection.rollback()
-        return jsonify({"message": str(error)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
 
 @materials_bp.route('/<int:material_id>', methods = ['DELETE'])
+@authorization_required('Material')
 def delete_material(material_id):
     try:
-        connection = connect()
-        cursor = connection.cursor()
-        
-        # 指定されたmaterial_idに対応するアイテムが存在するかチェック
-        cursor.execute('SELECT id FROM materials WHERE id = %s', (material_id,))
-        material = cursor.fetchone()
-        if not material:
-            return jsonify({"status": "Error", "message": "Material not found"}), 404
-        
-        # アイテムを削除
-        cursor.execute('DELETE FROM materials WHERE id = %s', (material_id,))
-        connection.commit()
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            query = 'SELECT EXISTS (SELECT 1 FROM materials WHERE id = %s)'
+            params = (material_id, )
+            cursor.execute(query, params)
+            material_exists = cursor.fetchone()
+            
+            if not material_exists:
+                return jsonify({"message": "Material Not Found"}), 404
+            
+            query = 'DELETE FROM materials WHERE id = %s'
+            params = (material_id, )
+            cursor.execute(query, params)
+            connection.commit()
 
-        return jsonify({"status": "Success", "message": "Material deleted successfully"}), 200
-    except Exception as error:
-        return jsonify({"status": "Error", "message": str(error)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
+        return jsonify({"message": "Material deleted successfully"}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500

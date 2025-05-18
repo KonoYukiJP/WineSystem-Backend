@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+
 from database import connect, fetchall
 
 works_bp = Blueprint('works', __name__)
@@ -35,4 +36,5 @@ def fetch_works():
 @works_bp.route('/<int:work_id>/operations', methods = ['GET'])
 def fetch_operations_in_work(work_id):
     query = 'SELECT id, work_id, name FROM operations WHERE work_id = %s'
-    return fetchall(query, (work_id, ))
+    operations = fetchall(query, (work_id, ))
+    return jsonify(operations), 200

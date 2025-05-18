@@ -9,4 +9,4 @@ def fetch_resources():
         SELECT id, name
         FROM resources resource
     '''
-    return fetchall(query, ())
+    return fetchall(query)
