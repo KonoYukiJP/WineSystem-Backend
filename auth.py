@@ -62,7 +62,7 @@ def authorization_required(resource):
                                 WHERE p.role_id = %s AND r.name = %s AND a.name = %s
                             ) AS permission
                             ''',
-                            (role_id, resource, request.method)
+                            (role_id, resource, 'PUT' if request.method == 'PATCH' else request.method)
                         )
                         print(role_id, resource, request.method)
                         if not cursor.fetchone()['permission']:
