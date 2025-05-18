@@ -8,6 +8,7 @@ from auth import authorization_required
 from database import connect, fetchall
 
 @systems_bp.route('/<int:system_id>/users', methods = ['GET'])
+@authorization_required('User')
 def get_users_in_system(system_id):
     try:
         query = '''

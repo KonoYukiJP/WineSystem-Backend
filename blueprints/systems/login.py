@@ -14,18 +14,18 @@ def login(system_id):
     body = request.get_json()
     
     try:
-        user_id = body['user_id']
+        username = body['username']
         password = body['password']
     except KeyError:
         return jsonify({'message': 'Invalid request format'}), 400
         
     query = '''
-                SELECT user.password_hash
-                FROM users user
-                JOIN systems `system` ON `system`.id = user.system_id
-                WHERE `system`.id = %s AND user.id = %s
-            '''
-    params = (system_id, user_id)
+        SELECT user.id, user.password_hash
+        FROM users user
+        JOIN systems `system` ON `system`.id = user.system_id
+        WHERE `system`.id = %s AND user.name = %s
+    '''
+    params = (system_id, username)
     try:
         with (
             connect() as connection,
@@ -46,7 +46,7 @@ def login(system_id):
         return jsonify({'message': 'Invalid user or password'}), 401
         
     try:
-        token = generate_token(user_id)
+        token = generate_token(user['id'])
         return jsonify({'token': token})
     except Exception as e:
         return jsonify({'message': str(e)}), 500
