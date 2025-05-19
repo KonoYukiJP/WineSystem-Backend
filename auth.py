@@ -12,64 +12,61 @@ SECRET_KEY = 'WineSystem'
 def generate_token(user_id):
     payload = {
         'user_id': user_id,
-        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)
+        'exp': datetime.datetime.utcnow() + datetime.timedelta(hours = 12)
     }
-    return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+    return jwt.encode(payload, SECRET_KEY, algorithm = 'HS256')
 
-def authorization_required(resource):
+def check_permission(user_id, resource, action):
+    try:
+        with connect() as connection:
+            with connection.cursor(dictionary = True) as cursor:
+                query = 'SELECT role_id FROM users WHERE id = %s'
+                params = (user_id, )
+                cursor.execute(query, params)
+                user = cursor.fetchone()
+                if not user:
+                    return False, 'User Not Found'
+                role_id = user['role_id']
+                
+                query = '''
+                    SELECT EXISTS (
+                        SELECT 1 
+                        FROM permissions p
+                        JOIN resources r ON r.id = p.resource_id
+                        JOIN actions a ON a.id = p.action_id
+                        WHERE p.role_id = %s AND r.name = %s AND a.name = %s
+                    ) AS permission
+                '''
+                params = (role_id, resource, action)
+                cursor.execute(query, params)
+                if not cursor.fetchone()['permission']:
+                    return False, 'Permission denied'
+        return True, None
+    except Exception as e:
+        return False, str(e)
+
+def authorization_required(resource = None):
     def decorator(f):
         @wraps(f)
         def wrapper(*args, **kwargs):
-            # --- Tokenの検証 ---
-            token = None
             if 'Authorization' in request.headers:
-                token = request.headers['Authorization'].split(" ")[1]  # "Bearer xxxx"
-
-            if not token:
+                token = request.headers['Authorization'].split(" ")[1]
+            else:
                 return jsonify({'message': 'Token is missing!'}), 401
-
             try:
-                data = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
-                request.user = {'user_id': data['user_id']}
-            except Exception as e:
-                return jsonify({'message': 'Token is invalid!', 'error': str(e)}), 401
-
-            user_id = request.user['user_id']
-
-            # --- ロール取得 ---
-            try:
-                with connect() as connection:
-                    with connection.cursor(dictionary=True) as cursor:
-                        cursor.execute('SELECT role_id FROM users WHERE id = %s', (user_id,))
-                        user = cursor.fetchone()
-                        if not user:
-                            return jsonify({'message': 'User Not Found'}), 404
-                        role_id = user['role_id']
-            except Exception as e:
-                return jsonify({'message': str(e)}), 500
-
-            # --- パーミッションチェック ---
-            try:
-                with connect() as connection:
-                    with connection.cursor(dictionary=True) as cursor:
-                        print(role_id, resource, 'PUT' if request.method == 'PATCH' else request.method)
-                        cursor.execute(
-                            '''
-                            SELECT EXISTS (
-                                SELECT 1 
-                                FROM permissions p
-                                JOIN resources r ON r.id = p.resource_id
-                                JOIN actions a ON a.id = p.action_id
-                                WHERE p.role_id = %s AND r.name = %s AND a.name = %s
-                            ) AS permission
-                            ''',
-                            (role_id, resource, 'PUT' if request.method == 'PATCH' else request.method)
-                        )
-                        print(role_id, resource, request.method)
-                        if not cursor.fetchone()['permission']:
-                            return jsonify({'message': 'Permission denied'}), 403
-            except Exception as e:
-                return jsonify({'message': str(e)}), 500
+                data = jwt.decode(token, SECRET_KEY, algorithms = ['HS256'])
+                request.user = {'id': data['user_id']}
+            except Exception:
+                return jsonify({'message': 'Token is invalid!'}), 401
+                
+            if resource:
+                if request.method in ('PUT', 'PATCH'):
+                    action = 'Update'
+                else:
+                    action = request.method
+                ok, e = check_permission(request.user['user_id'], resource, action)
+                if not ok:
+                    return jsonify({'message': e}), 403 if e == 'Permission denied' else 500
 
             return f(*args, **kwargs)
         return wrapper

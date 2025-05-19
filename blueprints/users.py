@@ -6,18 +6,19 @@ from database import connect, fetchall
 
 users_bp = Blueprint('users', __name__)
 
-@users_bp.route('/<int:user_id>/name', methods = ['GET'])
-def get_username_in_users(user_id):
-    query = 'SELECT name AS value FROM users AS user WHERE user.id = %s'
-    params = (user_id, )
-    user = fetchall(query, params)
-    return jsonify(user[name]), 200
+@users_bp.route('/me/name', methods = ['GET'])
+@authorization_required()
+def get_username_in_users():
+    query = 'SELECT name FROM users AS user WHERE user.id = %s'
+    params = (request.user['id'], )
+    user = fetchall(query, params)[0]
+    return jsonify(user['name']), 200
 
 @users_bp.route('/<int:user_id>', methods = ['PUT'])
 @authorization_required('User')
 def update_user(user_id):
     body = request.get_json()
-    
+
     try:
         username = body['name']
         role_id = body['role_id']
@@ -39,10 +40,11 @@ def update_user(user_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
-@users_bp.route('/<int:user_id>/name', methods = ['PUT'])
-@authorization_required('User')
-def update_username(user_id):
+@users_bp.route('/me/name', methods = ['PUT'])
+@authorization_required()
+def update_username():
     body = request.get_json()
+    user_id = request.user['id']
     
     try:
         username = body.get('name')
@@ -63,9 +65,11 @@ def update_username(user_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
-@users_bp.route('/<int:user_id>/password', methods=['PUT'])
-def update_password_in_user(user_id):
+@users_bp.route('/me/password', methods=['PUT'])
+@authorization_required()
+def update_password_in_user():
     body = request.get_json()
+    user_id = request.user['id']
     
     try:
         old_password = body['old_password']
