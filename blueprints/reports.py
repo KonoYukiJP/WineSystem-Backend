@@ -53,7 +53,7 @@ def update_report(report_id):
     except Exception as e:
         return jsonify({"message": str(e)}), 500
 
-@materials_bp.route('/<int:report_id>', methods = ['DELETE'])
+@reports_bp.route('/<int:report_id>', methods = ['DELETE'])
 @authorization_required('Report')
 def delete_report(report_id):
     try:
