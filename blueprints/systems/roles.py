@@ -5,7 +5,7 @@ from auth import authorization_required
 from database import connect, fetchall
 
 @systems_bp.route('/<int:system_id>/roles', methods = ['GET'])
-# @authorization_required('Role')
+@authorization_required('Role')
 def get_roles_in_system(system_id):
     try:
         query = '''
@@ -56,7 +56,7 @@ def get_roles_in_system(system_id):
         return jsonify({"message": str(error)}), 500
 
 @systems_bp.route('/<int:system_id>/roles', methods = ['POST'])
-# @authorization_required('Role')
+@authorization_required('Role')
 def insert_role_in_system(system_id):
     body = request.get_json()
     

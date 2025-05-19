@@ -64,7 +64,7 @@ def authorization_required(resource = None):
                     action = 'Update'
                 else:
                     action = request.method
-                ok, e = check_permission(request.user['user_id'], resource, action)
+                ok, e = check_permission(request.user['id'], resource, action)
                 if not ok:
                     return jsonify({'message': e}), 403 if e == 'Permission denied' else 500
 
