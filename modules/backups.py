@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from database import connect
+from database import connect, fetchall
 import subprocess
 import datetime
 import os
