@@ -29,7 +29,7 @@ def create_tank_in_system(system_id):
     try:
         name = body['name']
         note = body['note']
-        material_id = body['material_id']
+        material_id = body.get('material_id')
     except KeyError:
         return jsonify({'message': 'Invalid request format'}), 400
 

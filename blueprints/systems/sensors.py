@@ -39,7 +39,7 @@ def create_sensor_in_system(system_id):
     try:
         name = body['name']
         unit = body['unit']
-        tank_id = body['tank_id']
+        tank_id = body.get('tank_id')
         position = body['position']
         date = datetime.fromisoformat(body['date'].replace("Z", "+00:00"))
     except (KeyError, ValueError, TypeError) as error:
