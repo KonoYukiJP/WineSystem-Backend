@@ -4,12 +4,18 @@ import subprocess
 import datetime
 import os
 
+from auth import authorization_required
+
 backups_bp = Blueprint('backups', __name__)
 
 @backups_bp.route('', methods = ['POST'])
+@authorization_required('Backup')
 def create_backup():
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    backup_file = os.path.join('backups', f"backup_{timestamp}.sql")
+    query = 'SELECT name FROM users AS user WHERE user.id = %s'
+    params = (request.user['id'], )
+    user = fetchall(query, params)[0]
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    backup_file = os.path.join('backups', f"backup_{timestamp}_{user['name']}.sql")
 
     cmd = [
         'mysqldump',
@@ -25,6 +31,7 @@ def create_backup():
     return backup_file
 
 @backups_bp.route('', methods=['GET'])
+@authorization_required('Backup')
 def list_backups():
     backup_dir = "/var/www/WineSystem-Backend/backups"
 
@@ -38,11 +45,12 @@ def list_backups():
         print({"backups": files})
         return jsonify({"backups": files}), 200
 
-    except Exception as error:
-        print(str(error))
-        return jsonify({"error": str(error)}), 500
+    except Exception as e:
+        print(str(e))
+        return jsonify({"error": str(e)}), 500
 
 @backups_bp.route('', methods=['PUT'])
+@authorization_required('Backup')
 def restore_backup():
     data = request.get_json()
     filename = data.get('filename')
@@ -70,6 +78,7 @@ def restore_backup():
         return jsonify({"error": str(e)}), 500
 
 @backups_bp.route('/<string:filename>', methods=['DELETE'])
+@authorization_required('Backup')
 def delete_backup(filename):
     print(filename)
 
