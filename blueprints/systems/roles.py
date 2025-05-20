@@ -62,6 +62,7 @@ def insert_role_in_system(system_id):
     
     try:
         name = body['name']
+        permissions = body['permissions']
     except KeyError:
         return jsonify({'message': 'Invalid request format'}), 400
 
@@ -87,6 +88,21 @@ def insert_role_in_system(system_id):
             query = 'INSERT INTO roles (system_id, name) VALUES (%s, %s)'
             params = (system_id, name)
             cursor.execute(query, params)
+            role_id = cursor.lastrowid
+            
+            for permission in permissions:
+                resource_id = permission['resource_id']
+                action_ids = permission['action_ids']
+                
+                for action_id in action_ids:
+                    query = '''
+                        INSERT INTO permissions (role_id, resource_id, action_id)
+                        VALUES (%s, %s, %s)
+                        ON DUPLICATE KEY UPDATE role_id = role_id
+                    '''
+                    params = (role_id, resource_id, action_id)
+                    cursor.execute(query, params)
+            
             connection.commit()
             
         return jsonify({"message": "Role was inserted successly"}), 201
