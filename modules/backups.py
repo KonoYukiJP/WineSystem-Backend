@@ -16,7 +16,7 @@ def create_backup():
         params = (request.user['id'], )
         user = fetchall(query, params)[0]
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-        backup_file = os.path.join('backups', f"backup_{timestamp}_{user['name']}.sql")
+        backup_file = os.path.join('backups', f"backup_at_{timestamp}_by_{user['name']}.sql")
 
         cmd = [
             'mysqldump',
