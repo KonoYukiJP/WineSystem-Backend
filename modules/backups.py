@@ -11,24 +11,28 @@ backups_bp = Blueprint('backups', __name__)
 @backups_bp.route('', methods = ['POST'])
 @authorization_required('Backup')
 def create_backup():
-    query = 'SELECT name FROM users AS user WHERE user.id = %s'
-    params = (request.user['id'], )
-    user = fetchall(query, params)[0]
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
-    backup_file = os.path.join('backups', f"backup_{timestamp}_{user['name']}.sql")
+    try:
+        query = 'SELECT name FROM users AS user WHERE user.id = %s'
+        params = (request.user['id'], )
+        user = fetchall(query, params)[0]
+        timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+        backup_file = os.path.join('backups', f"backup_{timestamp}_{user['name']}.sql")
 
-    cmd = [
-        'mysqldump',
-        '--no-tablespaces',
-        '-u', 'flask_user',
-        '-pP@ssw0rd',
-        'wine_database'
-    ]
+        cmd = [
+            'mysqldump',
+            '--no-tablespaces',
+            '-u', 'flask_user',
+            '-pP@ssw0rd',
+            'wine_database'
+        ]
 
-    with open(backup_file, "w") as f:
-        subprocess.run(cmd, stdout=f, check=True)
+        with open(backup_file, "w") as f:
+            subprocess.run(cmd, stdout=f, check=True)
 
-    return backup_file
+        return backup_file
+    except Exception as e:
+        print(str(e))
+        return jsonify({"message": str(e)}), 500
 
 @backups_bp.route('', methods=['GET'])
 @authorization_required('Backup')
@@ -47,7 +51,7 @@ def list_backups():
 
     except Exception as e:
         print(str(e))
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"message": str(e)}), 500
 
 @backups_bp.route('', methods=['PUT'])
 @authorization_required('Backup')
@@ -75,7 +79,7 @@ def restore_backup():
 
     except Exception as e:
         print(str(e))
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"message": str(e)}), 500
 
 @backups_bp.route('/<string:filename>', methods=['DELETE'])
 @authorization_required('Backup')
@@ -95,4 +99,4 @@ def delete_backup(filename):
         return jsonify({"message": "削除しました"}), 200
     except Exception as e:
         print(str(e))
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"message": str(e)}), 500
