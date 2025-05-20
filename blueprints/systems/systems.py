@@ -12,59 +12,74 @@ def get_systems():
 @systems_bp.route('/<int:system_id>', methods = ['GET'])
 def fetch_system(system_id):
     query = 'SELECT id, name, year FROM systems AS `system` WHERE `system`.id = %s'
-    return fetchall(query, (system_id, ))[0]
+    system = fetchall(query, (system_id, ))[0]
+    return jsonify(system), 200
 
 @systems_bp.route('', methods = ['POST'])
 def insert_system():
     body = request.get_json()
-    name = body.get('name')
-    year = body.get('year')
-    owner_name = body.get('owner_name')
-    password = body.get('password')
+    
+    try:
+        name = body['name']
+        year = body['year']
+        owner_name = body['owner_name']
+        password = body['password']
+    except KeyError:
+        return jsonify({'message': 'Invalid request format'}), 400
+    
     password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
     try:
-        connection = connect()
-        cursor = connection.cursor()
-        
-        cursor.execute("SELECT EXISTS(SELECT 1 FROM systems WHERE name = %s)", (name,))
-        result = cursor.fetchone()
-        system_exists = result[0]
-        if system_exists:
-            return jsonify({"message": "System name already exists."}), 400
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            cursor.execute("SELECT EXISTS (SELECT 1 FROM systems WHERE name = %s)", (name, ))
+            system_exists = cursor.fetchone()[0]
             
-        
-        cursor.execute(
-            '''
-                INSERT INTO systems (name, year, admin_name, password) 
-                VALUES (%s, %s, %s, %s)
-            ''',
-            (name, year, owner_name, password)
-        )
-        system_id = cursor.lastrowid
-        
-        cursor.execute(
-            'INSERT INTO roles (system_id, name) VALUES (%s, %s)',
-            (system_id, "Owner")
-        )
-        role_id = cursor.lastrowid
-        cursor.execute(
-            'INSERT INTO users (system_id, name, password_hash, role_id, is_enabled)VALUES (%s, %s, %s, %s, %s)',
-            (system_id, owner_name, password_hash, role_id, '1')
-        )
-        cursor.execute(
-            'INSERT INTO roles (system_id, name) VALUES (%s, %s)',
-            (system_id, "Member")
-        )
-        connection.commit()
+            if system_exists:
+                return jsonify({"message": "System name already exists."}), 400
+                
+            
+            cursor.execute(
+                '''
+                    INSERT INTO systems (name, year, admin_name, password) 
+                    VALUES (%s, %s, %s, %s)
+                ''',
+                (name, year, owner_name, password)
+            )
+            system_id = cursor.lastrowid
+            
+            cursor.execute(
+                'INSERT INTO roles (system_id, name) VALUES (%s, %s)',
+                (system_id, "Owner")
+            )
+            role_id = cursor.lastrowid
+            resources = fetchall('SELECT id FROM resources')
+            actions = fetchall('SELECT id FROM actions')
+            for resource in resources:
+                for action in actions:
+                    cursor.execute(
+                        '''
+                        INSERT INTO permissions (role_id, resource_id, action_id)
+                        VALUES (%s, %s, %s)
+                        ON DUPLICATE KEY UPDATE role_id = role_id
+                        ''',
+                        (role_id, resource['id'], action['id'])
+                    )
+            
+            cursor.execute(
+                'INSERT INTO users (system_id, name, password_hash, role_id, is_enabled)VALUES (%s, %s, %s, %s, %s)',
+                (system_id, owner_name, password_hash, role_id, '1')
+            )
+            cursor.execute(
+                'INSERT INTO roles (system_id, name) VALUES (%s, %s)',
+                (system_id, "Member")
+            )
+            connection.commit()
         return jsonify({"message": "System was created successly."}), 201
     except Exception as error:
         return jsonify({"message": str(error)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
 
 @systems_bp.route('/<int:system_id>', methods=['PATCH'])
 def update_system(system_id):
