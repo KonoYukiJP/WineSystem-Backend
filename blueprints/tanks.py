@@ -11,8 +11,8 @@ def update_tank(tank_id):
     body = request.get_json()
     
     try:
-        tank_name = body.get('name')
-        tank_note = body.get('note')
+        tank_name = body['name']
+        tank_note = body['note']
         material_id = body.get('material_id')
     except KeyError:
         return jsonify({'message': 'Invalid request format'}), 400

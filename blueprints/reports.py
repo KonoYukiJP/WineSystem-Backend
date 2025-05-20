@@ -20,8 +20,8 @@ def update_report(report_id):
         work_id = body['work_id']
         operation_id = body['operation_id']
         kind_id = body['kind_id']
-        feature_id = body['feature_id']
-        value = body['value']
+        feature_id = body.get('feature_id')
+        value = body.get('value')
         note = body['note']
     except (KeyError, ValueError, TypeError) as error:
         return jsonify({"message": str(error)}), 400

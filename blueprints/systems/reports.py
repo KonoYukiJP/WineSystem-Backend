@@ -40,7 +40,7 @@ def create_report_in_system(system_id):
     body = request.get_json()
     try:
         date = datetime.fromisoformat(body['date'].replace("Z", "+00:00"))
-        user_id = body['user_id']
+        user_id = request.user['user_id']
         work_id = body['work_id']
         operation_id = body['operation_id']
         kind_id = body['kind_id']
