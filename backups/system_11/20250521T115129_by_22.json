@@ -1,0 +1,1012 @@
+{
+  "info": {
+    "filename": "20250521T115129_by_22.json",
+    "created_by": 22,
+    "created_at": "2025-05-21T02:51:29Z",
+    "note": "aa"
+  },
+  "system": [
+    {
+      "id": 11,
+      "name": "Test",
+      "password": "pass",
+      "admin_name": "Test",
+      "year": 2022
+    }
+  ],
+  "roles": [
+    {
+      "id": 13,
+      "name": "Owner",
+      "system_id": 11
+    },
+    {
+      "id": 14,
+      "name": "Role6",
+      "system_id": 11
+    },
+    {
+      "id": 15,
+      "name": "Role1",
+      "system_id": 11
+    },
+    {
+      "id": 16,
+      "name": "Role3",
+      "system_id": 11
+    },
+    {
+      "id": 17,
+      "name": "Role2",
+      "system_id": 11
+    },
+    {
+      "id": 18,
+      "name": "Role4",
+      "system_id": 11
+    },
+    {
+      "id": 19,
+      "name": "Role5",
+      "system_id": 11
+    },
+    {
+      "id": 20,
+      "name": "Role7",
+      "system_id": 11
+    },
+    {
+      "id": 21,
+      "name": "Role8",
+      "system_id": 11
+    },
+    {
+      "id": 26,
+      "name": "Role9",
+      "system_id": 11
+    },
+    {
+      "id": 33,
+      "name": "Rle7",
+      "system_id": 11
+    },
+    {
+      "id": 34,
+      "name": "Role10",
+      "system_id": 11
+    }
+  ],
+  "users": [
+    {
+      "id": 22,
+      "system_id": 11,
+      "is_enabled": 1,
+      "role_id": 13,
+      "name": "Test",
+      "password_hash": "$2b$12$Pktf.Ma34K8AgyzctnJ.ZO5nUR4rvHj3Rcg10Kgf5.FVA/RdGgOyy"
+    },
+    {
+      "id": 23,
+      "system_id": 11,
+      "is_enabled": 1,
+      "role_id": 19,
+      "name": "User1",
+      "password_hash": "$2b$12$L4bgdKz7AD.nVgiMt0Mem.gstMjvxrXSHoAEHFwpxgVmQ2k8fixCW"
+    },
+    {
+      "id": 25,
+      "system_id": 11,
+      "is_enabled": 1,
+      "role_id": 21,
+      "name": "User5",
+      "password_hash": "$2b$12$otKIFIzdlB6C1ru/hm.sf.GOac1JjODGrAlcM3LVDacTSPWjcgl1."
+    },
+    {
+      "id": 26,
+      "system_id": 11,
+      "is_enabled": 1,
+      "role_id": 21,
+      "name": "User4",
+      "password_hash": "$2b$12$Vuo5L8am8g6RyxD6CmbA4u3qnKytL3mNq2t/EI3gatcYsBbcy5a.a"
+    },
+    {
+      "id": 27,
+      "system_id": 11,
+      "is_enabled": 1,
+      "role_id": 20,
+      "name": "User7",
+      "password_hash": "$2b$12$OJpycHl/BQgoi2/CbA/lYuHL8z3ZBk5aWivIZjuG6f6jSgB9LUV9y"
+    },
+    {
+      "id": 28,
+      "system_id": 11,
+      "is_enabled": 1,
+      "role_id": 15,
+      "name": "User9",
+      "password_hash": "$2b$12$7DuRWxWAvmnuU9QPpvYW/uMKy7HmPpTkkT/VRHWplCXfUEsA/CSsq"
+    },
+    {
+      "id": 29,
+      "system_id": 11,
+      "is_enabled": 1,
+      "role_id": 18,
+      "name": "User10",
+      "password_hash": "$2b$12$ekOXdgyh74Ok.zZ55GblYeG0GDy9RLVVymwOiA5Gg1uhhnkM0rtpu"
+    },
+    {
+      "id": 30,
+      "system_id": 11,
+      "is_enabled": 1,
+      "role_id": 14,
+      "name": "User32",
+      "password_hash": "$2b$12$igEWMPtXoM.D9AHWT6XJ2.vXNtJHlEFs89VTxjRwWWU.MxBSRXVNy"
+    },
+    {
+      "id": 34,
+      "system_id": 11,
+      "is_enabled": 1,
+      "role_id": 18,
+      "name": "User26",
+      "password_hash": "$2b$12$EXMHILbx.rbvZyylMwEmfufvXPINjsFUQf1iA4eCyHABuIYnxU0zy"
+    },
+    {
+      "id": 37,
+      "system_id": 11,
+      "is_enabled": 1,
+      "role_id": 16,
+      "name": "User8",
+      "password_hash": "$2b$12$wkyHdlBVUOr7aEKV3R66S.Say4Jwp5Uc.eyY.aaYqdVuLf7eFmGz6"
+    },
+    {
+      "id": 38,
+      "system_id": 11,
+      "is_enabled": 1,
+      "role_id": 16,
+      "name": "User6",
+      "password_hash": "$2b$12$O.XWN1h.PmmjoBow3c95Ceu6S1MpYTwOQnVEvBfZy7TYqkPru8YVu"
+    },
+    {
+      "id": 42,
+      "system_id": 11,
+      "is_enabled": 1,
+      "role_id": 13,
+      "name": "Owner",
+      "password_hash": "$2b$12$YLlT0biEgeA2lnFQsBLSPuoIFIACKJcCE8EvauXJkpKQDCgaPf3o6"
+    },
+    {
+      "id": 43,
+      "system_id": 11,
+      "is_enabled": 0,
+      "role_id": 13,
+      "name": "owner2",
+      "password_hash": "$2b$12$EJklvGl7FuiKn2wDvnE72e6GI/DvI94h81jV5ji783ftJTWafP/Na"
+    }
+  ],
+  "permissions": [
+    {
+      "role_id": 13,
+      "action_id": 1,
+      "resource_id": 1
+    },
+    {
+      "role_id": 13,
+      "action_id": 1,
+      "resource_id": 2
+    },
+    {
+      "role_id": 13,
+      "action_id": 1,
+      "resource_id": 3
+    },
+    {
+      "role_id": 13,
+      "action_id": 1,
+      "resource_id": 4
+    },
+    {
+      "role_id": 13,
+      "action_id": 1,
+      "resource_id": 5
+    },
+    {
+      "role_id": 13,
+      "action_id": 1,
+      "resource_id": 6
+    },
+    {
+      "role_id": 13,
+      "action_id": 1,
+      "resource_id": 7
+    },
+    {
+      "role_id": 13,
+      "action_id": 2,
+      "resource_id": 1
+    },
+    {
+      "role_id": 13,
+      "action_id": 2,
+      "resource_id": 2
+    },
+    {
+      "role_id": 13,
+      "action_id": 2,
+      "resource_id": 3
+    },
+    {
+      "role_id": 13,
+      "action_id": 2,
+      "resource_id": 4
+    },
+    {
+      "role_id": 13,
+      "action_id": 2,
+      "resource_id": 5
+    },
+    {
+      "role_id": 13,
+      "action_id": 2,
+      "resource_id": 6
+    },
+    {
+      "role_id": 13,
+      "action_id": 2,
+      "resource_id": 7
+    },
+    {
+      "role_id": 13,
+      "action_id": 3,
+      "resource_id": 1
+    },
+    {
+      "role_id": 13,
+      "action_id": 3,
+      "resource_id": 2
+    },
+    {
+      "role_id": 13,
+      "action_id": 3,
+      "resource_id": 3
+    },
+    {
+      "role_id": 13,
+      "action_id": 3,
+      "resource_id": 4
+    },
+    {
+      "role_id": 13,
+      "action_id": 3,
+      "resource_id": 5
+    },
+    {
+      "role_id": 13,
+      "action_id": 3,
+      "resource_id": 6
+    },
+    {
+      "role_id": 13,
+      "action_id": 3,
+      "resource_id": 7
+    },
+    {
+      "role_id": 13,
+      "action_id": 4,
+      "resource_id": 1
+    },
+    {
+      "role_id": 13,
+      "action_id": 4,
+      "resource_id": 2
+    },
+    {
+      "role_id": 13,
+      "action_id": 4,
+      "resource_id": 3
+    },
+    {
+      "role_id": 13,
+      "action_id": 4,
+      "resource_id": 4
+    },
+    {
+      "role_id": 13,
+      "action_id": 4,
+      "resource_id": 5
+    },
+    {
+      "role_id": 13,
+      "action_id": 4,
+      "resource_id": 6
+    },
+    {
+      "role_id": 13,
+      "action_id": 4,
+      "resource_id": 7
+    },
+    {
+      "role_id": 14,
+      "action_id": 1,
+      "resource_id": 3
+    },
+    {
+      "role_id": 14,
+      "action_id": 1,
+      "resource_id": 4
+    },
+    {
+      "role_id": 14,
+      "action_id": 1,
+      "resource_id": 5
+    },
+    {
+      "role_id": 14,
+      "action_id": 2,
+      "resource_id": 2
+    },
+    {
+      "role_id": 14,
+      "action_id": 2,
+      "resource_id": 3
+    },
+    {
+      "role_id": 14,
+      "action_id": 2,
+      "resource_id": 4
+    },
+    {
+      "role_id": 14,
+      "action_id": 2,
+      "resource_id": 5
+    },
+    {
+      "role_id": 14,
+      "action_id": 3,
+      "resource_id": 2
+    },
+    {
+      "role_id": 14,
+      "action_id": 3,
+      "resource_id": 3
+    },
+    {
+      "role_id": 14,
+      "action_id": 3,
+      "resource_id": 4
+    },
+    {
+      "role_id": 14,
+      "action_id": 3,
+      "resource_id": 5
+    },
+    {
+      "role_id": 14,
+      "action_id": 4,
+      "resource_id": 3
+    },
+    {
+      "role_id": 14,
+      "action_id": 4,
+      "resource_id": 4
+    },
+    {
+      "role_id": 14,
+      "action_id": 4,
+      "resource_id": 5
+    },
+    {
+      "role_id": 15,
+      "action_id": 1,
+      "resource_id": 2
+    },
+    {
+      "role_id": 15,
+      "action_id": 2,
+      "resource_id": 2
+    },
+    {
+      "role_id": 15,
+      "action_id": 3,
+      "resource_id": 2
+    },
+    {
+      "role_id": 16,
+      "action_id": 1,
+      "resource_id": 2
+    },
+    {
+      "role_id": 16,
+      "action_id": 1,
+      "resource_id": 4
+    },
+    {
+      "role_id": 16,
+      "action_id": 1,
+      "resource_id": 5
+    },
+    {
+      "role_id": 16,
+      "action_id": 2,
+      "resource_id": 4
+    },
+    {
+      "role_id": 16,
+      "action_id": 2,
+      "resource_id": 5
+    },
+    {
+      "role_id": 16,
+      "action_id": 3,
+      "resource_id": 2
+    },
+    {
+      "role_id": 16,
+      "action_id": 3,
+      "resource_id": 4
+    },
+    {
+      "role_id": 16,
+      "action_id": 3,
+      "resource_id": 5
+    },
+    {
+      "role_id": 16,
+      "action_id": 4,
+      "resource_id": 4
+    },
+    {
+      "role_id": 16,
+      "action_id": 4,
+      "resource_id": 5
+    },
+    {
+      "role_id": 17,
+      "action_id": 1,
+      "resource_id": 2
+    },
+    {
+      "role_id": 17,
+      "action_id": 2,
+      "resource_id": 2
+    },
+    {
+      "role_id": 19,
+      "action_id": 1,
+      "resource_id": 3
+    },
+    {
+      "role_id": 19,
+      "action_id": 2,
+      "resource_id": 2
+    },
+    {
+      "role_id": 19,
+      "action_id": 2,
+      "resource_id": 3
+    },
+    {
+      "role_id": 19,
+      "action_id": 2,
+      "resource_id": 5
+    },
+    {
+      "role_id": 19,
+      "action_id": 3,
+      "resource_id": 3
+    },
+    {
+      "role_id": 19,
+      "action_id": 4,
+      "resource_id": 3
+    },
+    {
+      "role_id": 20,
+      "action_id": 1,
+      "resource_id": 2
+    },
+    {
+      "role_id": 20,
+      "action_id": 2,
+      "resource_id": 2
+    },
+    {
+      "role_id": 20,
+      "action_id": 3,
+      "resource_id": 2
+    },
+    {
+      "role_id": 20,
+      "action_id": 4,
+      "resource_id": 2
+    },
+    {
+      "role_id": 21,
+      "action_id": 1,
+      "resource_id": 4
+    },
+    {
+      "role_id": 21,
+      "action_id": 2,
+      "resource_id": 4
+    },
+    {
+      "role_id": 21,
+      "action_id": 3,
+      "resource_id": 4
+    },
+    {
+      "role_id": 21,
+      "action_id": 4,
+      "resource_id": 4
+    },
+    {
+      "role_id": 26,
+      "action_id": 1,
+      "resource_id": 2
+    },
+    {
+      "role_id": 26,
+      "action_id": 2,
+      "resource_id": 2
+    },
+    {
+      "role_id": 33,
+      "action_id": 2,
+      "resource_id": 1
+    },
+    {
+      "role_id": 33,
+      "action_id": 2,
+      "resource_id": 2
+    },
+    {
+      "role_id": 33,
+      "action_id": 2,
+      "resource_id": 4
+    },
+    {
+      "role_id": 33,
+      "action_id": 2,
+      "resource_id": 5
+    },
+    {
+      "role_id": 33,
+      "action_id": 2,
+      "resource_id": 6
+    },
+    {
+      "role_id": 33,
+      "action_id": 3,
+      "resource_id": 2
+    },
+    {
+      "role_id": 33,
+      "action_id": 4,
+      "resource_id": 1
+    },
+    {
+      "role_id": 34,
+      "action_id": 1,
+      "resource_id": 1
+    },
+    {
+      "role_id": 34,
+      "action_id": 1,
+      "resource_id": 4
+    },
+    {
+      "role_id": 34,
+      "action_id": 1,
+      "resource_id": 5
+    },
+    {
+      "role_id": 34,
+      "action_id": 2,
+      "resource_id": 1
+    },
+    {
+      "role_id": 34,
+      "action_id": 2,
+      "resource_id": 2
+    },
+    {
+      "role_id": 34,
+      "action_id": 2,
+      "resource_id": 5
+    },
+    {
+      "role_id": 34,
+      "action_id": 2,
+      "resource_id": 6
+    },
+    {
+      "role_id": 34,
+      "action_id": 3,
+      "resource_id": 2
+    },
+    {
+      "role_id": 34,
+      "action_id": 3,
+      "resource_id": 3
+    },
+    {
+      "role_id": 34,
+      "action_id": 3,
+      "resource_id": 6
+    },
+    {
+      "role_id": 34,
+      "action_id": 4,
+      "resource_id": 3
+    },
+    {
+      "role_id": 34,
+      "action_id": 4,
+      "resource_id": 4
+    }
+  ],
+  "materials": [
+    {
+      "id": 22,
+      "name": "Material3",
+      "note": "",
+      "system_id": 11
+    },
+    {
+      "id": 23,
+      "name": "Material4",
+      "note": "",
+      "system_id": 11
+    },
+    {
+      "id": 24,
+      "name": "Material29",
+      "note": "",
+      "system_id": 11
+    },
+    {
+      "id": 25,
+      "name": "Material1",
+      "note": "Note",
+      "system_id": 11
+    },
+    {
+      "id": 26,
+      "name": "Material5",
+      "note": "note",
+      "system_id": 11
+    },
+    {
+      "id": 27,
+      "name": "Material50",
+      "note": "",
+      "system_id": 11
+    },
+    {
+      "id": 28,
+      "name": "Material21",
+      "note": "Material note",
+      "system_id": 11
+    },
+    {
+      "id": 32,
+      "name": "Material 120",
+      "note": "",
+      "system_id": 11
+    },
+    {
+      "id": 33,
+      "name": "Material 130",
+      "note": "",
+      "system_id": 11
+    }
+  ],
+  "tanks": [
+    {
+      "id": 14,
+      "system_id": 11,
+      "name": "Tank23",
+      "note": "",
+      "material_id": 23
+    },
+    {
+      "id": 17,
+      "system_id": 11,
+      "name": "Tank3",
+      "note": "",
+      "material_id": 24
+    },
+    {
+      "id": 23,
+      "system_id": 11,
+      "name": "タンク1",
+      "note": "",
+      "material_id": 23
+    }
+  ],
+  "sensors": [
+    {
+      "id": 10,
+      "name": "Sensor22",
+      "position": "",
+      "date": "2025-04-19 00:00:00",
+      "tank_id": null,
+      "unit": "",
+      "system_id": 11
+    },
+    {
+      "id": 12,
+      "name": "Sensor5",
+      "position": "Key",
+      "date": "2025-04-19 00:00:00",
+      "tank_id": null,
+      "unit": "",
+      "system_id": 11
+    },
+    {
+      "id": 14,
+      "name": "Sensor8",
+      "position": "",
+      "date": "2025-04-02 00:00:00",
+      "tank_id": 14,
+      "unit": "",
+      "system_id": 11
+    },
+    {
+      "id": 15,
+      "name": "Sensor81",
+      "position": "",
+      "date": "2025-04-20 00:00:00",
+      "tank_id": null,
+      "unit": "",
+      "system_id": 11
+    },
+    {
+      "id": 16,
+      "name": "Sensor2",
+      "position": "",
+      "date": "2025-04-20 00:00:00",
+      "tank_id": null,
+      "unit": "",
+      "system_id": 11
+    },
+    {
+      "id": 17,
+      "name": "Sensor4",
+      "position": "",
+      "date": "2025-04-20 00:00:00",
+      "tank_id": null,
+      "unit": "",
+      "system_id": 11
+    },
+    {
+      "id": 18,
+      "name": "Sensor6",
+      "position": "",
+      "date": "2025-04-20 00:00:00",
+      "tank_id": null,
+      "unit": "",
+      "system_id": 11
+    },
+    {
+      "id": 19,
+      "name": "Sensor32",
+      "position": "Top",
+      "date": "2025-05-04 10:30:36",
+      "tank_id": 17,
+      "unit": "Kg",
+      "system_id": 11
+    },
+    {
+      "id": 20,
+      "name": "Sensei",
+      "position": "To",
+      "date": "2025-05-04 10:51:41",
+      "tank_id": 14,
+      "unit": "Kg",
+      "system_id": 11
+    },
+    {
+      "id": 26,
+      "name": "センサー1",
+      "position": "上部",
+      "date": "2025-05-18 03:43:04",
+      "tank_id": 23,
+      "unit": "kg",
+      "system_id": 11
+    }
+  ],
+  "reports": [
+    {
+      "id": 4,
+      "date": "2025-04-28 10:53:57",
+      "user_id": 22,
+      "work_id": 1,
+      "operation_id": 1,
+      "kind_id": 26,
+      "feature_id": null,
+      "note": "",
+      "system_id": 11,
+      "value": null
+    },
+    {
+      "id": 5,
+      "date": "2025-04-28 03:21:55",
+      "user_id": 22,
+      "work_id": 2,
+      "operation_id": 4,
+      "kind_id": 17,
+      "feature_id": 2,
+      "note": "Note",
+      "system_id": 11,
+      "value": 293.0
+    },
+    {
+      "id": 6,
+      "date": "2025-04-28 03:22:24",
+      "user_id": 22,
+      "work_id": 1,
+      "operation_id": 1,
+      "kind_id": 23,
+      "feature_id": null,
+      "note": null,
+      "system_id": 11,
+      "value": null
+    },
+    {
+      "id": 7,
+      "date": "2025-04-28 04:01:41",
+      "user_id": 22,
+      "work_id": 1,
+      "operation_id": 1,
+      "kind_id": 22,
+      "feature_id": null,
+      "note": "Aafepaiod",
+      "system_id": 11,
+      "value": null
+    },
+    {
+      "id": 8,
+      "date": "2025-04-28 04:09:41",
+      "user_id": 22,
+      "work_id": 2,
+      "operation_id": 2,
+      "kind_id": 14,
+      "feature_id": null,
+      "note": null,
+      "system_id": 11,
+      "value": null
+    },
+    {
+      "id": 9,
+      "date": "2025-04-28 04:11:05",
+      "user_id": 22,
+      "work_id": 2,
+      "operation_id": 2,
+      "kind_id": 14,
+      "feature_id": null,
+      "note": "Aijfoja",
+      "system_id": 11,
+      "value": null
+    },
+    {
+      "id": 10,
+      "date": "2025-04-28 04:11:51",
+      "user_id": 22,
+      "work_id": 2,
+      "operation_id": 3,
+      "kind_id": 17,
+      "feature_id": null,
+      "note": "Tank",
+      "system_id": 11,
+      "value": null
+    },
+    {
+      "id": 11,
+      "date": "2025-04-29 06:14:53",
+      "user_id": 22,
+      "work_id": 1,
+      "operation_id": 1,
+      "kind_id": 24,
+      "feature_id": null,
+      "note": null,
+      "system_id": 11,
+      "value": null
+    },
+    {
+      "id": 12,
+      "date": "2025-04-29 06:15:35",
+      "user_id": 22,
+      "work_id": 1,
+      "operation_id": 1,
+      "kind_id": 22,
+      "feature_id": null,
+      "note": "Note",
+      "system_id": 11,
+      "value": null
+    },
+    {
+      "id": 13,
+      "date": "2025-04-29 06:16:15",
+      "user_id": 22,
+      "work_id": 2,
+      "operation_id": 2,
+      "kind_id": 14,
+      "feature_id": null,
+      "note": "Gained",
+      "system_id": 11,
+      "value": null
+    },
+    {
+      "id": 14,
+      "date": "2025-04-29 06:17:02",
+      "user_id": 22,
+      "work_id": 2,
+      "operation_id": 4,
+      "kind_id": 14,
+      "feature_id": null,
+      "note": null,
+      "system_id": 11,
+      "value": null
+    },
+    {
+      "id": 15,
+      "date": "2025-04-29 06:20:08",
+      "user_id": 22,
+      "work_id": 2,
+      "operation_id": 4,
+      "kind_id": 14,
+      "feature_id": 2,
+      "note": null,
+      "system_id": 11,
+      "value": 23.0
+    },
+    {
+      "id": 16,
+      "date": "2025-04-29 06:20:28",
+      "user_id": 22,
+      "work_id": 2,
+      "operation_id": 4,
+      "kind_id": 17,
+      "feature_id": 7,
+      "note": null,
+      "system_id": 11,
+      "value": 24.0
+    },
+    {
+      "id": 17,
+      "date": "2025-04-29 06:22:33",
+      "user_id": 22,
+      "work_id": 2,
+      "operation_id": 4,
+      "kind_id": 14,
+      "feature_id": 8,
+      "note": null,
+      "system_id": 11,
+      "value": null
+    },
+    {
+      "id": 30,
+      "date": "2025-05-12 23:54:00",
+      "user_id": 22,
+      "work_id": 2,
+      "operation_id": 6,
+      "kind_id": 14,
+      "feature_id": null,
+      "note": null,
+      "system_id": 11,
+      "value": null
+    },
+    {
+      "id": 31,
+      "date": "2025-05-14 00:05:25",
+      "user_id": 22,
+      "work_id": 7,
+      "operation_id": 3,
+      "kind_id": 14,
+      "feature_id": null,
+      "note": "",
+      "system_id": 11,
+      "value": null
+    }
+  ]
+}

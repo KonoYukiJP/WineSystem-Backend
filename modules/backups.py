@@ -1,13 +1,59 @@
-from flask import Blueprint, request, jsonify
-from database import connect, fetchall
-import subprocess
+# backups.py
+
 import datetime
 import os
 
+from flask import Blueprint, request, jsonify
+
 from auth import authorization_required
+from database import connect, fetchall
 
 backups_bp = Blueprint('backups', __name__)
 
+@backups_bp.route('/<int:system_id>/restore', methods = ['POST'])
+@authorization_required('Backup')
+def restore_system_backup(system_id):
+    data = request.get_json()
+    filename = data.get('file')
+
+    if not filename:
+        return jsonify({'error': 'ファイル名が必要です'}), 400
+
+    backup_path = os.path.join("backups", filename)
+
+    if not os.path.exists(backup_path):
+        return jsonify({'error': '指定されたバックアップファイルが存在しません'}), 404
+
+    try:
+        import json
+        with open(backup_path, "r", encoding='utf-8') as f:
+            backup_data = json.load(f)
+
+        conn = connect()
+        cur = conn.cursor()
+
+        # テーブルの順序を意識（外部キー制約の都合）
+        for table_name in ['system', 'tanks', 'materials', 'sensors']:
+            records = backup_data.get(table_name, [])
+            for row in records:
+                columns = ', '.join(row.keys())
+                placeholders = ', '.join(['%s'] * len(row))
+                values = tuple(row.values())
+                sql = f"REPLACE INTO {table_name} ({columns}) VALUES ({placeholders})"
+                cur.execute(sql, values)
+
+        conn.commit()
+        cur.close()
+        conn.close()
+
+        return jsonify({'message': f'{filename} から復元しました'})
+
+    except Exception as e:
+        print(str(e))
+        return jsonify({'error': str(e)}), 500
+
+'''
+import subprocess
 @backups_bp.route('', methods = ['POST'])
 @authorization_required('Backup')
 def create_backup():
@@ -100,3 +146,4 @@ def delete_backup(filename):
     except Exception as e:
         print(str(e))
         return jsonify({"message": str(e)}), 500
+'''
