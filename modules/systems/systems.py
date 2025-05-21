@@ -1,3 +1,7 @@
+# systems.py
+
+import os
+
 from flask import Blueprint,request,jsonify
 import bcrypt
 
@@ -16,7 +20,7 @@ def fetch_system(system_id):
     return jsonify(system), 200
 
 @systems_bp.route('', methods = ['POST'])
-def insert_system():
+def create_system():
     body = request.get_json()
     
     try:
@@ -77,9 +81,11 @@ def insert_system():
                 (system_id, "Member")
             )
             connection.commit()
+            backup_dir = os.path.join('backups', f'system_{system_id}')
+            os.makedirs(backup_dir, exist_ok = True)
         return jsonify({"message": "System was created successly."}), 201
-    except Exception as error:
-        return jsonify({"message": str(error)}), 500
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
 
 @systems_bp.route('/<int:system_id>', methods=['PATCH'])
 def update_system(system_id):
@@ -123,25 +129,29 @@ def update_system(system_id):
 @systems_bp.route('/<int:system_id>', methods = ['DELETE'])
 def delete_system(system_id):
     try:
-        connection = connect()
-        cursor = connection.cursor()
-        
-        cursor.execute('SELECT EXISTS (SELECT 1 FROM systems WHERE id = %s)', (system_id,))
-        result = cursor.fetchone()
-        if not result[0]:
-            return jsonify({"message": "Not Found"}), 404
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            cursor.execute('SELECT EXISTS (SELECT 1 FROM systems WHERE id = %s)', (system_id,))
+            result = cursor.fetchone()
+            if not result[0]:
+                return jsonify({"message": "Not Found"}), 404
+                
+                cursor.execute(
+                    '''
+                        DELETE FROM permissions permission
+                        JOIN roles role ON permission.role_id = role.id
+                        WHERE role.system_id = %s
+                    ''',
+                    (system_id, )
+                )
+            
+            cursor.execute('DELETE FROM users WHERE system_id = %s', (system_id, ))
 
-        cursor.execute('DELETE FROM users WHERE system_id = %s', (system_id, ))
-
-        # アイテムを削除
-        cursor.execute('DELETE FROM systems WHERE id = %s', (system_id,))
-        connection.commit()
+            cursor.execute('DELETE FROM systems WHERE id = %s', (system_id,))
+            connection.commit()
         
         return jsonify({"message": "System deleted successfully"}), 200
-    except Exception as error:
-        return jsonify({"message": str(error)}), 500
-    finally:
-        if cursor:
-            cursor.close()
-        if connection:
-            connection.close()
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500

@@ -3,7 +3,6 @@
 import datetime
 import json
 import os
-from zoneinfo import ZoneInfo
 
 from flask import Blueprint, request, jsonify
 
@@ -33,7 +32,7 @@ def export_system_backup(system_id):
             "created_at": datetime.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'),
             "note": note
         }
-        result['system'] = fetchall('SELECT * FROM systems WHERE id = %s', (system_id, ))
+        result['systems'] = fetchall('SELECT * FROM systems WHERE id = %s', (system_id, ))
         result['roles'] = fetchall('SELECT * FROM roles WHERE system_id = %s', (system_id, ))
         result['users'] = fetchall('SELECT * FROM users WHERE system_id = %s', (system_id, ))
         result['permissions'] = fetchall(
@@ -96,7 +95,7 @@ def list_backups(system_id):
     print(backups)
     return jsonify(backups), 200
 
-@systems_bp.route('/<int:system_id>/backups/<string:filename>', methods=['DELETE'])
+@systems_bp.route('/<int:system_id>/backups/<string:filename>', methods = ['DELETE'])
 @authorization_required('Backup')
 def delete_backup(system_id, filename):
     backup_dir = os.path.join('backups', f'system_{system_id}')
@@ -113,50 +112,50 @@ def delete_backup(system_id, filename):
 
 
 # バックアップファイルから復元
-@systems_bp.route('/<int:system_id>/backups/restore', methods = ['POST'])
+@systems_bp.route('/<int:system_id>/backups/<string:filename>', methods = ['PUT'])
 @authorization_required('Backup')
-def restore_system_backup(system_id):
-    data = request.get_json()
-    filename = data.get("filename")
-    if not filename:
-        return jsonify({"error": "filenameが必要です"}), 400
-
+def restore_system_backup(system_id, filename):
     try:
-        BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-        BACKUP_DIR = os.path.join(BASE_DIR, '../..', 'backups')
-        backup_path = os.path.join(BACKUP_DIR, filename)
+        backup_dir = os.path.join('backups', f'system_{system_id}')
+        filepath = os.path.join(backup_dir, filename)
 
-        if not os.path.exists(backup_path):
-            return jsonify({"error": "ファイルが存在しません"}), 404
+        if not os.path.exists(filepath):
+            return jsonify({"message": "file doesn't exist"}), 404
 
-        with open(backup_path, "r", encoding="utf-8") as f:
-            import json
+        with open(filepath, "r", encoding = "utf-8") as f:
             backup_data = json.load(f)
+            
+        with (
+            connect() as connection,
+            connection.cursor() as cursor
+        ):
+            cursor.execute(
+                '''
+                    DELETE permission FROM permissions permission
+                    JOIN roles role ON permission.role_id = role.id
+                    WHERE role.system_id = %s
+                ''',
+                (system_id, )
+            )
+            cursor.execute('DELETE FROM users WHERE system_id = %s', (system_id, ))
+            cursor.execute('DELETE FROM systems WHERE id = %s', (system_id,))
+            
+            ordered_tables = ["systems", "roles", "users", "permissions", "materials", "tanks", "sensors", "reports"]
+            for table in ordered_tables:
+                rows = backup_data.get(table)
+                if not rows:
+                    continue
+                columns = rows[0].keys()
+                placeholders = ", ".join(["%s"] * len(columns))
+                column_list = ", ".join(columns)
+                insert_sql = f"INSERT INTO {table} ({column_list}) VALUES ({placeholders})"
+                values = [tuple(row[col] for col in columns) for row in rows]
+                cursor.executemany(insert_sql, values)
 
-        conn = connect()
-        cur = conn.cursor()
-
-        cur.execute("DELETE FROM tanks WHERE system_id = %s", (system_id,))
-        cur.execute("DELETE FROM materials WHERE system_id = %s", (system_id,))
-        cur.execute("DELETE FROM sensors WHERE system_id = %s", (system_id,))
-        # テーブルの復元順に注意
-        for table, rows in backup_data.items():
-            if not rows:
-                continue
-            columns = rows[0].keys()
-            placeholders = ", ".join(["%s"] * len(columns))
-            column_list = ", ".join(columns)
-            insert_sql = f"INSERT INTO {table} ({column_list}) VALUES ({placeholders})"
-            values = [tuple(row[col] for col in columns) for row in rows]
-            cur.executemany(insert_sql, values)
-
-        conn.commit()
-        cur.close()
-        conn.close()
+            connection.commit()
 
         return jsonify({"message": f"{filename} を復元しました"}), 200
 
     except Exception as e:
         print(f"復元エラー: {e}")
         return jsonify({"error": str(e)}), 500
-
