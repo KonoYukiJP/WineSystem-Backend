@@ -137,15 +137,6 @@ def delete_system(system_id):
             result = cursor.fetchone()
             if not result[0]:
                 return jsonify({"message": "Not Found"}), 404
-                
-                cursor.execute(
-                    '''
-                        DELETE FROM permissions permission
-                        JOIN roles role ON permission.role_id = role.id
-                        WHERE role.system_id = %s
-                    ''',
-                    (system_id, )
-                )
             
             cursor.execute('DELETE FROM users WHERE system_id = %s', (system_id, ))
 

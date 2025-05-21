@@ -129,14 +129,6 @@ def restore_system_backup(system_id, filename):
             connect() as connection,
             connection.cursor() as cursor
         ):
-            cursor.execute(
-                '''
-                    DELETE permission FROM permissions permission
-                    JOIN roles role ON permission.role_id = role.id
-                    WHERE role.system_id = %s
-                ''',
-                (system_id, )
-            )
             cursor.execute('DELETE FROM users WHERE system_id = %s', (system_id, ))
             cursor.execute('DELETE FROM systems WHERE id = %s', (system_id,))
             
