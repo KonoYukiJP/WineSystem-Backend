@@ -98,7 +98,7 @@ def list_backups(system_id):
 
 @systems_bp.route('/<int:system_id>/backups/<string:filename>', methods=['DELETE'])
 @authorization_required('Backup')
-def delete_backup(filename):
+def delete_backup(system_id, filename):
     backup_dir = os.path.join('backups', f'system_{system_id}')
     filepath = os.path.join(backup_dir, filename)
 
