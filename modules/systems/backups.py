@@ -96,6 +96,22 @@ def list_backups(system_id):
     print(backups)
     return jsonify(backups), 200
 
+@systems_bp.route('/<int:system_id>/backups/<string:filename>', methods=['DELETE'])
+@authorization_required('Backup')
+def delete_backup(filename):
+    backup_dir = os.path.join('backups', f'system_{system_id}')
+    filepath = os.path.join(backup_dir, filename)
+
+    if not os.path.exists(filepath):
+        return jsonify({"message": "file doesn't exist."}), 404
+
+    try:
+        os.remove(filepath)
+        return jsonify({"message": "削除しました"}), 200
+    except Exception as e:
+        return jsonify({"message": str(e)}), 500
+
+
 # バックアップファイルから復元
 @systems_bp.route('/<int:system_id>/backups/restore', methods = ['POST'])
 @authorization_required('Backup')
