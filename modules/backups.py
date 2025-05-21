@@ -126,24 +126,19 @@ def restore_backup():
     except Exception as e:
         print(str(e))
         return jsonify({"message": str(e)}), 500
+'''
 
 @backups_bp.route('/<string:filename>', methods=['DELETE'])
 @authorization_required('Backup')
 def delete_backup(filename):
-    print(filename)
 
-    if not filename:
-        return jsonify({"error": "'filename' が必要です"}), 400
+    filepath = os.path.join("backups", filename)
 
-    backup_file = os.path.join("/var/www/WineSystem-Backend/backups", filename)
-
-    if not os.path.exists(backup_file):
-        return jsonify({"error": "ファイルが存在しません"}), 404
+    if not os.path.exists(filepath):
+        return jsonify({"message": "file doesn't exist."}), 404
 
     try:
-        os.remove(backup_file)
+        os.remove(filepath)
         return jsonify({"message": "削除しました"}), 200
     except Exception as e:
-        print(str(e))
         return jsonify({"message": str(e)}), 500
-'''
