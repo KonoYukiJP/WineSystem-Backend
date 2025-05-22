@@ -29,7 +29,6 @@ def get_sensors():
         sensors = fetchall(query, params)
         for sensor in sensors:
             sensor['date'] = sensor['date'].strftime('%Y-%m-%dT%H:%M:%SZ')
-        print(sensors)
         return jsonify(sensors), 200
     except Exception as e:
         return jsonify({'message': str(e)}), 500
