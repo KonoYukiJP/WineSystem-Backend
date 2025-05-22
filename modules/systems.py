@@ -5,7 +5,7 @@ import os
 from flask import Blueprint, request, jsonify
 import bcrypt
 
-from auth import generate_token
+from auth import generate_token, authorization_required
 from database import connect, fetchall
 
 systems_bp = Blueprint('systems', __name__)
@@ -15,8 +15,10 @@ def get_systems():
     systems = fetchall('SELECT id, name, year, admin_name, password FROM systems')
     return jsonify(systems)
     
-@systems_bp.route('/<int:system_id>', methods = ['GET'])
-def fetch_system(system_id):
+@systems_bp.route('me', methods = ['GET'])
+@authorization_required()
+def get_system():
+    system_id = request.user['system_id']
     query = 'SELECT id, name, year FROM systems AS `system` WHERE `system`.id = %s'
     system = fetchall(query, (system_id, ))[0]
     return jsonify(system), 200
@@ -128,8 +130,9 @@ def update_system(system_id):
         if connection:
             connection.close()
 
-@systems_bp.route('/<int:system_id>', methods = ['DELETE'])
-def delete_system(system_id):
+@systems_bp.route('/me', methods = ['DELETE'])
+def delete_system():
+    system_id = request.user['system_id']
     try:
         with (
             connect() as connection,
