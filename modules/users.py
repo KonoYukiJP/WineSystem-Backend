@@ -10,7 +10,7 @@ users_bp = Blueprint('users', __name__)
 
 @users_bp.route('', methods = ['GET'])
 @authorization_required('User')
-def get_users_in_system():
+def get_users():
     system_id = request.user['system_id']
     try:
         query = '''
@@ -28,7 +28,7 @@ def get_users_in_system():
 
 @users_bp.route('', methods = ['POST'])
 @authorization_required('User')
-def create_user_in_system():
+def create_user():
     system_id = request.user['system_id']
     body = request.get_json()
     try:
@@ -74,7 +74,7 @@ def create_user_in_system():
 
 @users_bp.route('/me/name', methods = ['GET'])
 @authorization_required()
-def get_username_in_users():
+def get_username():
     query = 'SELECT name FROM users AS user WHERE user.id = %s'
     params = (request.user['id'], )
     user = fetchall(query, params)[0]
@@ -133,7 +133,7 @@ def update_username():
 
 @users_bp.route('/me/password', methods=['PUT'])
 @authorization_required()
-def update_password_in_user():
+def update_password():
     body = request.get_json()
     user_id = request.user['id']
     

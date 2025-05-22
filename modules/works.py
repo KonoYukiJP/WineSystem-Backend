@@ -1,3 +1,5 @@
+# works.py
+
 from flask import Blueprint, request, jsonify
 
 from database import connect, fetchall
@@ -29,12 +31,16 @@ def fetch_works():
                 for operation_id in operation_ids:
                     work['operation_ids'].append(operation_id['operation_id'])
     
-        return works
+        return jsonify(works), 200
     except Exception as e:
         return jsonify({'message': str(e)}), 500
 
 @works_bp.route('/<int:work_id>/operations', methods = ['GET'])
 def fetch_operations_in_work(work_id):
     query = 'SELECT id, work_id, name FROM operations WHERE work_id = %s'
-    operations = fetchall(query, (work_id, ))
-    return jsonify(operations), 200
+    try:
+        operations = fetchall(query, (work_id, ))
+        return jsonify(operations), 200
+    except Exception as e:
+        return jsonify({'message': str(e)}), 500
+    

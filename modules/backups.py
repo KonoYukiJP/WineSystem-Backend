@@ -13,7 +13,7 @@ backups_bp = Blueprint('backups', __name__)
 
 @backups_bp.route('', methods = ['POST'])
 @authorization_required('Backup')
-def export_system_backup():
+def create_backup():
     user_id = request.user['id']
     system_id = request.user['system_id']
     body = request.get_json()
@@ -67,7 +67,7 @@ def export_system_backup():
 
 @backups_bp.route('', methods = ['GET'])
 @authorization_required('Backup')
-def list_backups():
+def get_backups():
     system_id = request.user['system_id']
     backup_dir = os.path.join('backups', f'system_{system_id}')
     filenames = sorted([
@@ -117,7 +117,7 @@ def delete_backup(filename):
 # バックアップファイルから復元
 @backups_bp.route('/<string:filename>', methods = ['PUT'])
 @authorization_required('Backup')
-def restore_system_backup(filename):
+def restore_backup(filename):
     system_id = request.user['system_id']
     try:
         backup_dir = os.path.join('backups', f'system_{system_id}')

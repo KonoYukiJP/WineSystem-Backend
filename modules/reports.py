@@ -11,7 +11,7 @@ reports_bp = Blueprint('reports', __name__)
 
 @reports_bp.route('', methods = ['GET'])
 @authorization_required('Report')
-def get_reports_in_system():
+def get_reports():
     system_id = request.user['system_id']
     query = '''
         SELECT
@@ -38,7 +38,7 @@ def get_reports_in_system():
 
 @reports_bp.route('', methods = ['POST'])
 @authorization_required('Report')
-def create_report_in_system():
+def create_report():
     system_id = request.user['system_id']
     body = request.get_json()
     try:

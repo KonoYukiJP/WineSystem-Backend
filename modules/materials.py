@@ -9,7 +9,7 @@ materials_bp = Blueprint('materials', __name__)
 
 @materials_bp.route('', methods = ['GET'])
 @authorization_required(resource = 'Material')
-def get_materials_in_system():
+def get_materials():
     system_id = request.user['system_id']
     query = '''
         SELECT id, name, note
@@ -25,7 +25,7 @@ def get_materials_in_system():
 
 @materials_bp.route('', methods = ['POST'])
 @authorization_required(resource = 'Material')
-def create_material_in_system():
+def create_material():
     system_id = request.user['system_id']
     body = request.get_json()
     

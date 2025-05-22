@@ -9,7 +9,7 @@ tanks_bp = Blueprint('tanks', __name__)
 
 @tanks_bp.route('', methods = ['GET'])
 @authorization_required('Tank')
-def get_tanks_in_system():
+def get_tanks():
     system_id = request.user['system_id']
     query = '''
         SELECT id, name, note, material_id
@@ -25,7 +25,7 @@ def get_tanks_in_system():
 
 @tanks_bp.route('', methods = ['POST'])
 @authorization_required('Tank')
-def create_tank_in_system():
+def create_tank():
     system_id = request.user['system_id']
     body = request.get_json()
     

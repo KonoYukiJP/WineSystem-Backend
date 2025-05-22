@@ -11,7 +11,7 @@ sensors_bp = Blueprint('sensors', __name__)
 
 @sensors_bp.route('', methods = ['GET'])
 @authorization_required('Sensor')
-def get_sensors_in_system():
+def get_sensors():
     system_id  = request.user['system_id']
     query = '''
         SELECT
@@ -35,7 +35,7 @@ def get_sensors_in_system():
 
 @sensors_bp.route('', methods = ['POST'])
 @authorization_required('Sensor')
-def create_sensor_in_system():
+def create_sensor():
     system_id = request.user['system_id']
     body = request.get_json()
     

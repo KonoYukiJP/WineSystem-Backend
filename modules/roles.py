@@ -9,7 +9,7 @@ roles_bp = Blueprint('roles', __name__)
 
 @roles_bp.route('', methods = ['GET'])
 @authorization_required('Role')
-def get_roles_in_system():
+def get_roles():
     system_id = request.user['system_id']
     try:
         query = '''
@@ -61,7 +61,7 @@ def get_roles_in_system():
 
 @roles_bp.route('', methods = ['POST'])
 @authorization_required('Role')
-def insert_role_in_system():
+def create_role():
     system_id = request.user['system_id']
     body = request.get_json()
     
