@@ -19,3 +19,11 @@ def fetchall(query, params = ()):
         result = cursor.fetchall()
     return result
 
+def fetchone(query, params = ()):
+    with (
+        connect() as connection,
+        connection.cursor(dictionary = True) as cursor
+    ):
+        cursor.execute(query, params)
+        result = cursor.fetchone()
+    return result

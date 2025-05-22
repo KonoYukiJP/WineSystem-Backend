@@ -1,0 +1,185 @@
+{
+  "info": {
+    "filename": "20250522T095654.json",
+    "created_by": "owner",
+    "created_at": "2025-05-22T00:56:54Z",
+    "note": ""
+  },
+  "systems": [
+    {
+      "id": 16,
+      "name": "Test",
+      "password": "pass",
+      "admin_name": "Owner",
+      "year": 2025
+    }
+  ],
+  "roles": [
+    {
+      "id": 35,
+      "name": "Owner",
+      "system_id": 16
+    },
+    {
+      "id": 36,
+      "name": "Member",
+      "system_id": 16
+    }
+  ],
+  "users": [
+    {
+      "id": 44,
+      "system_id": 16,
+      "is_enabled": 1,
+      "role_id": 35,
+      "name": "owner",
+      "password_hash": "$2b$12$yXfCss0hpJM0z4TK/zIzo.6HzCHQ00OPd9w9mtOgz.cmSFpO79/pW"
+    }
+  ],
+  "permissions": [
+    {
+      "role_id": 35,
+      "action_id": 1,
+      "resource_id": 1
+    },
+    {
+      "role_id": 35,
+      "action_id": 1,
+      "resource_id": 2
+    },
+    {
+      "role_id": 35,
+      "action_id": 1,
+      "resource_id": 3
+    },
+    {
+      "role_id": 35,
+      "action_id": 1,
+      "resource_id": 4
+    },
+    {
+      "role_id": 35,
+      "action_id": 1,
+      "resource_id": 5
+    },
+    {
+      "role_id": 35,
+      "action_id": 1,
+      "resource_id": 6
+    },
+    {
+      "role_id": 35,
+      "action_id": 1,
+      "resource_id": 7
+    },
+    {
+      "role_id": 35,
+      "action_id": 2,
+      "resource_id": 1
+    },
+    {
+      "role_id": 35,
+      "action_id": 2,
+      "resource_id": 2
+    },
+    {
+      "role_id": 35,
+      "action_id": 2,
+      "resource_id": 3
+    },
+    {
+      "role_id": 35,
+      "action_id": 2,
+      "resource_id": 4
+    },
+    {
+      "role_id": 35,
+      "action_id": 2,
+      "resource_id": 5
+    },
+    {
+      "role_id": 35,
+      "action_id": 2,
+      "resource_id": 6
+    },
+    {
+      "role_id": 35,
+      "action_id": 2,
+      "resource_id": 7
+    },
+    {
+      "role_id": 35,
+      "action_id": 3,
+      "resource_id": 1
+    },
+    {
+      "role_id": 35,
+      "action_id": 3,
+      "resource_id": 2
+    },
+    {
+      "role_id": 35,
+      "action_id": 3,
+      "resource_id": 3
+    },
+    {
+      "role_id": 35,
+      "action_id": 3,
+      "resource_id": 4
+    },
+    {
+      "role_id": 35,
+      "action_id": 3,
+      "resource_id": 5
+    },
+    {
+      "role_id": 35,
+      "action_id": 3,
+      "resource_id": 6
+    },
+    {
+      "role_id": 35,
+      "action_id": 3,
+      "resource_id": 7
+    },
+    {
+      "role_id": 35,
+      "action_id": 4,
+      "resource_id": 1
+    },
+    {
+      "role_id": 35,
+      "action_id": 4,
+      "resource_id": 2
+    },
+    {
+      "role_id": 35,
+      "action_id": 4,
+      "resource_id": 3
+    },
+    {
+      "role_id": 35,
+      "action_id": 4,
+      "resource_id": 4
+    },
+    {
+      "role_id": 35,
+      "action_id": 4,
+      "resource_id": 5
+    },
+    {
+      "role_id": 35,
+      "action_id": 4,
+      "resource_id": 6
+    },
+    {
+      "role_id": 35,
+      "action_id": 4,
+      "resource_id": 7
+    }
+  ],
+  "materials": [],
+  "tanks": [],
+  "sensors": [],
+  "reports": []
+}

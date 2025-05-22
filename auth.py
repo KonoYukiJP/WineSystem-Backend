@@ -55,9 +55,26 @@ def authorization_required(resource = None):
                 return jsonify({'message': 'Token is missing!'}), 401
             try:
                 data = jwt.decode(token, SECRET_KEY, algorithms = ['HS256'])
-                request.user = {'id': data['user_id']}
+                user_id = data['user_id']
+                with connect() as connection:
+                    with connection.cursor(dictionary = True) as cursor:
+                        cursor.execute(
+                            '''
+                                SELECT role.system_id
+                                FROM users user
+                                JOIN roles role ON role.id = user.role_id
+                                WHERE user.id = %s
+                            ''',
+                            (user_id, )
+                        )
+                        result = cursor.fetchone()
+                        if not result:
+                            return jsonify({'message': 'User Not Found'}), 404
+                        request.user = {'id': user_id, 'system_id': result['system_id']}
             except Exception:
                 return jsonify({'message': 'Token is invalid!'}), 401
+                
+            
                 
             if resource:
                 if request.method in ('PUT', 'PATCH'):
