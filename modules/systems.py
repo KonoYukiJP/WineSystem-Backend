@@ -187,6 +187,6 @@ def login(system_id):
         
     try:
         token = generate_token(user['id'])
-        return jsonify({'token': token})
+        return jsonify(token)
     except Exception as e:
         return jsonify({'message': str(e)}), 500
