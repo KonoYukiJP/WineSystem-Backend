@@ -16,7 +16,8 @@ def get_users():
         query = '''
             SELECT user.id, user.name, role_id, user.is_enabled
             FROM users user
-            WHERE user.system_id = %s
+            JOIN roles role ON role.id = user.role_id
+            WHERE role.system_id = %s
         '''
         params = (system_id, )
         results = fetchall(query, params)
@@ -32,7 +33,7 @@ def create_user():
     system_id = request.user['system_id']
     body = request.get_json()
     try:
-        user_name = body['name']
+        username = body['name']
         password = body['password']
         role_id = body['role_id']
         is_enabled = body['is_enabled']
@@ -53,18 +54,24 @@ def create_user():
             if not system_exists:
                 return jsonify({"message": "System Not Found."}), 404
             
-            query = 'SELECT EXISTS (SELECT 1 FROM users WHERE system_id = %s AND name = %s)'
-            params = (system_id, user_name)
+            query = '''
+                SELECT EXISTS (
+                    SELECT 1 FROM users user
+                    JOIN roles role ON role.id = user.role_id 
+                    WHERE role.system_id = %s AND user.name = %s
+                )
+            '''
+            params = (system_id, username)
             cursor.execute(query, params)
             name_exists = cursor.fetchone()[0]
             if name_exists:
                 return jsonify({"message": "This name is already taken."}), 409
             
             query = '''
-                INSERT INTO users (system_id, name, password_hash, role_id, is_enabled)
-                VALUES (%s, %s, %s, %s, %s)
+                INSERT INTO users (name, password_hash, role_id, is_enabled)
+                VALUES (%s, %s, %s, %s)
             '''
-            params = (system_id, user_name, password_hash, role_id, is_enabled)
+            params = (username, password_hash, role_id, is_enabled)
             cursor.execute(query, params)
             connection.commit()
             
@@ -109,8 +116,8 @@ def update_user(user_id):
 @users_bp.route('/me/name', methods = ['PUT'])
 @authorization_required()
 def update_username():
-    body = request.get_json()
     user_id = request.user['id']
+    body = request.get_json()
     
     try:
         username = body.get('name')
@@ -134,8 +141,8 @@ def update_username():
 @users_bp.route('/me/password', methods=['PUT'])
 @authorization_required()
 def update_password():
-    body = request.get_json()
     user_id = request.user['id']
+    body = request.get_json()
     
     try:
         old_password = body['old_password']

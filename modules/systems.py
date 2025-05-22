@@ -15,7 +15,7 @@ def get_systems():
     systems = fetchall('SELECT id, name, year, admin_name, password FROM systems')
     return jsonify(systems)
     
-@systems_bp.route('me', methods = ['GET'])
+@systems_bp.route('/me', methods = ['GET'])
 @authorization_required()
 def get_system():
     system_id = request.user['system_id']
@@ -131,6 +131,7 @@ def update_system(system_id):
             connection.close()
 
 @systems_bp.route('/me', methods = ['DELETE'])
+@authorization_required()
 def delete_system():
     system_id = request.user['system_id']
     try:
@@ -138,14 +139,20 @@ def delete_system():
             connect() as connection,
             connection.cursor() as cursor
         ):
-            cursor.execute('SELECT EXISTS (SELECT 1 FROM systems WHERE id = %s)', (system_id,))
+            cursor.execute('SELECT EXISTS (SELECT 1 FROM systems WHERE id = %s)', (system_id, ))
             result = cursor.fetchone()
             if not result[0]:
                 return jsonify({"message": "Not Found"}), 404
-            
-            cursor.execute('DELETE FROM users WHERE system_id = %s', (system_id, ))
-
-            cursor.execute('DELETE FROM systems WHERE id = %s', (system_id,))
+                
+            cursor.execute(
+                '''
+                    DELETE user FROM users user
+                    JOIN roles role ON role.id = user.role_id
+                    WHERE role.system_id = %s
+                ''',
+                (system_id, )
+            )
+            cursor.execute('DELETE FROM systems WHERE id = %s', (system_id, ))
             connection.commit()
         
         return jsonify({"message": "System deleted successfully"}), 200
@@ -165,7 +172,8 @@ def login(system_id):
     query = '''
         SELECT user.id, user.password_hash
         FROM users user
-        JOIN systems `system` ON `system`.id = user.system_id
+        JOIN roles role ON role.id = user.role_id
+        JOIN systems `system` ON `system`.id = role.system_id
         WHERE `system`.id = %s AND user.name = %s
     '''
     params = (system_id, username)

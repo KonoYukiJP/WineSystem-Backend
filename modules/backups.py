@@ -36,7 +36,14 @@ def create_backup():
         }
         result['systems'] = fetchall('SELECT * FROM systems WHERE id = %s', (system_id, ))
         result['roles'] = fetchall('SELECT * FROM roles WHERE system_id = %s', (system_id, ))
-        result['users'] = fetchall('SELECT * FROM users WHERE system_id = %s', (system_id, ))
+        result['users'] = fetchall(
+            '''
+                SELECT user.* FROM users user
+                JOIN roles role ON role.id = user.role_id
+                WHERE role.system_id = %s
+            ''',
+            (system_id, )
+        )
         result['permissions'] = fetchall(
             '''
                 SELECT permission.*
@@ -133,8 +140,15 @@ def restore_backup(filename):
             connect() as connection,
             connection.cursor() as cursor
         ):
-            cursor.execute('DELETE FROM users WHERE system_id = %s', (system_id, ))
-            cursor.execute('DELETE FROM systems WHERE id = %s', (system_id,))
+            cursor.execute(
+                '''
+                    DELETE user FROM users user
+                    JOIN roles role ON role.id = user.role_id
+                    WHERE role.system_id = %s
+                ''',
+                (system_id, )
+            )
+            cursor.execute('DELETE FROM systems WHERE id = %s', (system_id, ))
             
             ordered_tables = ["systems", "roles", "users", "permissions", "materials", "tanks", "sensors", "reports"]
             for table in ordered_tables:
