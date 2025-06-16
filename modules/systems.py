@@ -77,7 +77,7 @@ def create_system():
                     )
             
             cursor.execute(
-                'INSERT INTO users (name, password_hash, role_id, is_enabled)VALUES (%s, %s, %s, %s, %s)',
+                'INSERT INTO users (name, password_hash, role_id, is_enabled)VALUES (%s, %s, %s, %s)',
                 (owner_name, password_hash, role_id, '1')
             )
             cursor.execute(
